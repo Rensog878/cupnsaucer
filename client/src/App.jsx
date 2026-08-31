@@ -94,7 +94,8 @@ function App() {
         );
       } else {
         setLoginMessage(
-          data.message || "Failed to send OTP"
+          data.message ||
+            "Failed to send OTP"
         );
       }
     } catch (error) {
@@ -130,7 +131,8 @@ function App() {
           method: "POST",
 
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type":
+              "application/json",
           },
 
           body: JSON.stringify({
@@ -150,7 +152,8 @@ function App() {
         );
       } else {
         setLoginMessage(
-          data.message || "Invalid OTP"
+          data.message ||
+            "Invalid OTP"
         );
       }
     } catch (error) {
@@ -162,6 +165,27 @@ function App() {
     }
 
     setLoginLoading(false);
+  };
+
+  // =====================================================
+  // LOGOUT
+  // =====================================================
+
+  const handleLogout = () => {
+    setLoggedIn(false);
+
+    setPhone("");
+    setOtp("");
+
+    setOtpSent(false);
+
+    setLoginLoading(false);
+    setLoginMessage("");
+
+    setCart([]);
+
+    setPaymentLoading(false);
+    setPaymentStatus("");
   };
 
   // =====================================================
@@ -269,9 +293,7 @@ function App() {
   const loadRazorpay = () => {
     return new Promise(
       (resolve) => {
-        if (
-          window.Razorpay
-        ) {
+        if (window.Razorpay) {
           resolve(true);
           return;
         }
@@ -322,6 +344,10 @@ function App() {
       );
       return;
     }
+
+    // -----------------------------------------------
+    // START LOADING
+    // -----------------------------------------------
 
     setPaymentLoading(true);
     setPaymentStatus("");
@@ -380,8 +406,10 @@ function App() {
       const data =
         await response.json();
 
-      if (!response.ok ||
-          !data.success) {
+      if (
+        !response.ok ||
+        !data.success
+      ) {
         setPaymentStatus(
           data.message ||
             "Unable to create order"
@@ -431,8 +459,12 @@ function App() {
 
         theme: {
           color:
-            "#3399cc",
+            "#2563eb",
         },
+
+        // ---------------------------------------------
+        // PAYMENT SUCCESS
+        // ---------------------------------------------
 
         handler:
           async function (
@@ -447,7 +479,8 @@ function App() {
                 await fetch(
                   `${API_URL}/api/verify-payment`,
                   {
-                    method: "POST",
+                    method:
+                      "POST",
 
                     headers: {
                       "Content-Type":
@@ -489,15 +522,33 @@ function App() {
               );
             }
 
+            // -----------------------------------------
+            // ALWAYS ENABLE BUTTON
+            // -----------------------------------------
+
             setPaymentLoading(false);
           },
+
+        // ---------------------------------------------
+        // RAZORPAY CLOSED / BACK BUTTON
+        // ---------------------------------------------
 
         modal: {
           ondismiss:
             function () {
+              console.log(
+                "Razorpay checkout closed"
+              );
+
+              // IMPORTANT:
+              // This immediately enables
+              // Pay button again.
+
               setPaymentLoading(
                 false
               );
+
+              setPaymentStatus("");
             },
         },
       };
@@ -510,6 +561,10 @@ function App() {
         new window.Razorpay(
           options
         );
+
+      // -----------------------------------------------
+      // PAYMENT FAILED
+      // -----------------------------------------------
 
       razorpay.on(
         "payment.failed",
@@ -526,21 +581,48 @@ function App() {
               "Payment failed"
           );
 
+          // IMPORTANT:
+          // Enable button again.
+
           setPaymentLoading(
             false
           );
         }
       );
 
+      // -----------------------------------------------
+      // OPEN CHECKOUT
+      // -----------------------------------------------
+
       razorpay.open();
+
+      // -----------------------------------------------
+      // EXTRA SAFETY FOR BACK/CLOSE
+      // -----------------------------------------------
+      //
+      // Sometimes browser focus returns after
+      // Razorpay closes. This makes sure the
+      // button doesn't remain stuck.
+
+      setTimeout(() => {
+        if (
+          document.visibilityState ===
+          "visible"
+        ) {
+          setPaymentLoading(
+            false
+          );
+        }
+      }, 1000);
     } catch (error) {
-      console.error(
-        error
-      );
+      console.error(error);
 
       setPaymentStatus(
         "Something went wrong"
       );
+
+      // IMPORTANT:
+      // Never leave button disabled.
 
       setPaymentLoading(
         false
@@ -555,7 +637,12 @@ function App() {
   if (!loggedIn) {
     return (
       <div className="login-page">
+
         <div className="login-card">
+
+          <div className="login-logo">
+            M
+          </div>
 
           <h1>
             My MERN Store
@@ -565,12 +652,16 @@ function App() {
             WhatsApp Login
           </h2>
 
+          <p>
+            Login securely using
+            your WhatsApp number
+          </p>
+
           {!otpSent ? (
             <>
-              <p>
-                Enter your WhatsApp
-                number
-              </p>
+              <div className="input-label">
+                WhatsApp Number
+              </div>
 
               <input
                 type="tel"
@@ -596,18 +687,24 @@ function App() {
             </>
           ) : (
             <>
-              <p>
-                OTP sent to:
-              </p>
+              <div className="otp-info">
+                <span>
+                  OTP sent to
+                </span>
 
-              <strong>
-                {phone}
-              </strong>
+                <strong>
+                  {phone}
+                </strong>
+              </div>
+
+              <div className="input-label">
+                Enter OTP
+              </div>
 
               <input
                 type="text"
                 maxLength="6"
-                placeholder="Enter OTP"
+                placeholder="Enter 6-digit OTP"
                 value={otp}
                 onChange={(e) =>
                   setOtp(
@@ -617,7 +714,9 @@ function App() {
               />
 
               <button
-                onClick={verifyOTP}
+                onClick={
+                  verifyOTP
+                }
                 disabled={
                   loginLoading
                 }
@@ -630,9 +729,15 @@ function App() {
               <button
                 className="secondary-button"
                 onClick={() => {
-                  setOtpSent(false);
+                  setOtpSent(
+                    false
+                  );
+
                   setOtp("");
-                  setLoginMessage("");
+
+                  setLoginMessage(
+                    ""
+                  );
                 }}
               >
                 Change Number
@@ -646,7 +751,12 @@ function App() {
             </p>
           )}
 
+          <div className="login-footer">
+            Secure WhatsApp authentication
+          </div>
+
         </div>
+
       </div>
     );
   }
@@ -658,40 +768,88 @@ function App() {
   return (
     <div className="app">
 
+      {/* =================================================
+          HEADER
+      ================================================= */}
+
       <header className="header">
 
-        <div>
-          <h1>
-            My MERN Store
-          </h1>
+        <div className="header-brand">
 
-          <p>
-            Logged in with{" "}
-            {phone}
-          </p>
+          <div className="header-logo">
+            M
+          </div>
+
+          <div>
+            <h1>
+              My MERN Store
+            </h1>
+
+            <p>
+              Logged in with{" "}
+              {phone}
+            </p>
+          </div>
+
         </div>
 
-        <div className="cart-count">
-          Cart:{" "}
-          {cart.reduce(
-            (sum, item) =>
-              sum +
-              item.quantity,
-            0
-          )}
+        <div className="header-actions">
+
+          <div className="cart-count">
+            🛒 Cart{" "}
+            <span>
+              {cart.reduce(
+                (sum, item) =>
+                  sum +
+                  item.quantity,
+                0
+              )}
+            </span>
+          </div>
+
+          <button
+            className="logout-button"
+            onClick={
+              handleLogout
+            }
+          >
+            Logout
+          </button>
+
         </div>
 
       </header>
 
+      {/* =================================================
+          MAIN
+      ================================================= */}
+
       <main>
 
-        {/* PRODUCTS */}
+        {/* =================================================
+            PRODUCTS
+        ================================================= */}
 
         <section className="products">
 
-          <h2>
-            Products
-          </h2>
+          <div className="section-heading">
+
+            <div>
+              <span className="eyebrow">
+                OUR PRODUCTS
+              </span>
+
+              <h2>
+                Choose your product
+              </h2>
+
+              <p>
+                Simple products,
+                simple checkout.
+              </p>
+            </div>
+
+          </div>
 
           <div className="product-grid">
 
@@ -704,32 +862,48 @@ function App() {
                   }
                 >
 
-                  <img
-                    src={
-                      product.image
-                    }
-                    alt={
-                      product.name
-                    }
-                  />
+                  <div className="product-image-wrapper">
 
-                  <h3>
-                    {product.name}
-                  </h3>
+                    <img
+                      src={
+                        product.image
+                      }
+                      alt={
+                        product.name
+                      }
+                    />
 
-                  <p className="price">
-                    ₹{product.price}
-                  </p>
+                    <span className="product-badge">
+                      NEW
+                    </span>
 
-                  <button
-                    onClick={() =>
-                      addToCart(
-                        product
-                      )
-                    }
-                  >
-                    Add to Cart
-                  </button>
+                  </div>
+
+                  <div className="product-content">
+
+                    <h3>
+                      {product.name}
+                    </h3>
+
+                    <div className="product-bottom">
+
+                      <p className="price">
+                        ₹{product.price}
+                      </p>
+
+                      <button
+                        onClick={() =>
+                          addToCart(
+                            product
+                          )
+                        }
+                      >
+                        Add to Cart
+                      </button>
+
+                    </div>
+
+                  </div>
 
                 </div>
               )
@@ -739,108 +913,182 @@ function App() {
 
         </section>
 
-        {/* CART */}
+        {/* =================================================
+            CART
+        ================================================= */}
 
         <section className="cart">
 
-          <h2>
-            Your Cart
-          </h2>
+          <div className="cart-heading">
+
+            <div>
+              <span className="eyebrow">
+                YOUR ORDER
+              </span>
+
+              <h2>
+                Shopping Cart
+              </h2>
+            </div>
+
+            {cart.length > 0 && (
+              <span className="cart-items-label">
+                {cart.reduce(
+                  (sum, item) =>
+                    sum +
+                    item.quantity,
+                  0
+                )}{" "}
+                items
+              </span>
+            )}
+
+          </div>
 
           {cart.length === 0 ? (
-            <p>
-              Your cart is empty
-            </p>
-          ) : (
-            <>
-              {cart.map(
-                (item) => (
-                  <div
-                    className="cart-item"
-                    key={
-                      item.id
-                    }
-                  >
+            <div className="empty-cart">
 
-                    <div>
-                      <strong>
-                        {item.name}
-                      </strong>
-
-                      <p>
-                        ₹
-                        {
-                          item.price
-                        }{" "}
-                        ×{" "}
-                        {
-                          item.quantity
-                        }
-                      </p>
-                    </div>
-
-                    <div className="quantity">
-
-                      <button
-                        onClick={() =>
-                          decreaseQuantity(
-                            item.id
-                          )
-                        }
-                      >
-                        -
-                      </button>
-
-                      <span>
-                        {
-                          item.quantity
-                        }
-                      </span>
-
-                      <button
-                        onClick={() =>
-                          increaseQuantity(
-                            item.id
-                          )
-                        }
-                      >
-                        +
-                      </button>
-
-                    </div>
-
-                    <button
-                      className="remove"
-                      onClick={() =>
-                        removeFromCart(
-                          item.id
-                        )
-                      }
-                    >
-                      Remove
-                    </button>
-
-                  </div>
-                )
-              )}
-
-              <div className="total">
-                Total: ₹{total}
+              <div className="empty-cart-icon">
+                🛒
               </div>
 
-              <button
-                className="pay-button"
-                onClick={
-                  handlePayment
-                }
-                disabled={
-                  paymentLoading
-                }
-              >
-                {paymentLoading
-                  ? "Processing..."
-                  : `Pay ₹${total} with Razorpay`}
-              </button>
+              <h3>
+                Your cart is empty
+              </h3>
+
+              <p>
+                Add a product above
+                to start shopping.
+              </p>
+
+            </div>
+          ) : (
+            <>
+              <div className="cart-list">
+
+                {cart.map(
+                  (item) => (
+                    <div
+                      className="cart-item"
+                      key={
+                        item.id
+                      }
+                    >
+
+                      <div className="cart-product">
+
+                        <img
+                          src={
+                            item.image
+                          }
+                          alt={
+                            item.name
+                          }
+                        />
+
+                        <div>
+                          <strong>
+                            {item.name}
+                          </strong>
+
+                          <p>
+                            ₹
+                            {
+                              item.price
+                            }{" "}
+                            each
+                          </p>
+                        </div>
+
+                      </div>
+
+                      <div className="quantity">
+
+                        <button
+                          onClick={() =>
+                            decreaseQuantity(
+                              item.id
+                            )
+                          }
+                        >
+                          −
+                        </button>
+
+                        <span>
+                          {
+                            item.quantity
+                          }
+                        </span>
+
+                        <button
+                          onClick={() =>
+                            increaseQuantity(
+                              item.id
+                            )
+                          }
+                        >
+                          +
+                        </button>
+
+                      </div>
+
+                      <div className="item-total">
+                        ₹
+                        {item.price *
+                          item.quantity}
+                      </div>
+
+                      <button
+                        className="remove"
+                        onClick={() =>
+                          removeFromCart(
+                            item.id
+                          )
+                        }
+                      >
+                        Remove
+                      </button>
+
+                    </div>
+                  )
+                )}
+
+              </div>
+
+              <div className="checkout">
+
+                <div className="total">
+
+                  <span>
+                    Total
+                  </span>
+
+                  <strong>
+                    ₹{total}
+                  </strong>
+
+                </div>
+
+                <button
+                  className="pay-button"
+                  onClick={
+                    handlePayment
+                  }
+                  disabled={
+                    paymentLoading
+                  }
+                >
+                  {paymentLoading
+                    ? "Processing..."
+                    : `Pay ₹${total} with Razorpay`}
+                </button>
+
+                <p className="secure-payment">
+                  🔒 Secure payment powered
+                  by Razorpay
+                </p>
+
+              </div>
             </>
           )}
 
