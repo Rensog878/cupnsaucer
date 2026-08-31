@@ -1,0 +1,276 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f5f5;
+  color: #222;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* =========================================
+   LOGIN
+========================================= */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: white;
+  padding: 35px;
+  border-radius: 15px;
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.login-card h1 {
+  margin-top: 0;
+  font-size: 30px;
+}
+
+.login-card h2 {
+  margin-bottom: 10px;
+}
+
+.login-card p {
+  color: #666;
+}
+
+.login-card input {
+  width: 100%;
+  padding: 14px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.login-card button {
+  width: 100%;
+  padding: 14px;
+  margin-top: 10px;
+  background: #111;
+  color: white;
+  border-radius: 8px;
+}
+
+.secondary-button {
+  background: #777 !important;
+}
+
+.message {
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.header {
+  background: white;
+  padding: 20px 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+}
+
+.header h1 {
+  margin: 0;
+}
+
+.header p {
+  margin: 5px 0 0;
+  color: #777;
+}
+
+.cart-count {
+  background: #111;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+/* =========================================
+   MAIN
+========================================= */
+
+main {
+  max-width: 1100px;
+  margin: auto;
+  padding: 40px 20px;
+}
+
+.products h2,
+.cart h2 {
+  margin-top: 0;
+}
+
+/* =========================================
+   PRODUCTS
+========================================= */
+
+.product-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: 25px;
+}
+
+.product-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow:
+    0 5px 20px
+    rgba(0, 0, 0, 0.08);
+}
+
+.product-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.product-card h3 {
+  margin-bottom: 5px;
+}
+
+.price {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.product-card button {
+  width: 100%;
+  padding: 13px;
+  background: #111;
+  color: white;
+  border-radius: 8px;
+}
+
+/* =========================================
+   CART
+========================================= */
+
+.cart {
+  margin-top: 40px;
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow:
+    0 5px 20px
+    rgba(0, 0, 0, 0.08);
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 15px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.cart-item p {
+  margin-bottom: 0;
+  color: #777;
+}
+
+.quantity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.quantity button {
+  width: 35px;
+  height: 35px;
+  border-radius: 6px;
+  background: #eee;
+}
+
+.quantity span {
+  min-width: 20px;
+  text-align: center;
+}
+
+.remove {
+  background: #d9534f;
+  color: white;
+  padding: 9px 13px;
+  border-radius: 6px;
+}
+
+.total {
+  text-align: right;
+  font-size: 22px;
+  font-weight: bold;
+  margin-top: 25px;
+}
+
+.pay-button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  background: #3399cc;
+  color: white;
+  border-radius: 8px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.status {
+  margin-top: 20px;
+  padding: 15px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  word-break: break-word;
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+  .header {
+    padding: 15px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .total {
+    text-align: left;
+  }
+}
