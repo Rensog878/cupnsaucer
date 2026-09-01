@@ -644,10 +644,6 @@ function App() {
             M
           </div>
 
-          <h1>
-            My MERN Store
-          </h1>
-
           <h2>
             WhatsApp Login
           </h2>
@@ -750,9 +746,14 @@ function App() {
               {loginMessage}
             </p>
           )}
-
+<div>
+  i
+</div>
           <div className="login-footer">
+          
             Secure WhatsApp authentication
+
+
           </div>
 
         </div>
