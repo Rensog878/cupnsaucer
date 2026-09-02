@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 
 // =====================================================
@@ -53,6 +53,40 @@ function App() {
     useState("");
 
   // =====================================================
+  // OTP RESEND TIMER
+  // =====================================================
+
+  // Frontend countdown only controls the UI.
+  // The backend also enforces the real 30-second
+  // cooldown.
+  const [resendTimer, setResendTimer] = useState(0);
+
+  // =====================================================
+  // OTP COUNTDOWN
+  // =====================================================
+
+  useEffect(() => {
+    if (resendTimer <= 0) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setResendTimer((current) => {
+        if (current <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+
+        return current - 1;
+      });
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [resendTimer]);
+
+  // =====================================================
   // CART STATE
   // =====================================================
 
@@ -72,6 +106,14 @@ function App() {
     if (!phone.trim()) {
       setLoginMessage(
         "Please enter your WhatsApp number"
+      );
+      return;
+    }
+
+    // Frontend protection.
+    if (resendTimer > 0) {
+      setLoginMessage(
+        `Please wait ${resendTimer} seconds before requesting another OTP.`
       );
       return;
     }
@@ -106,8 +148,36 @@ function App() {
 
       console.log("Send OTP response:", data);
 
+      // =================================================
+      // BACKEND 30-SECOND COOLDOWN
+      // =================================================
+
+      if (response.status === 429) {
+        const remaining =
+          Number(data.remainingSeconds) || 30;
+
+        setResendTimer(remaining);
+
+        setLoginMessage(
+          data.message ||
+            `Please wait ${remaining} seconds before requesting another OTP.`
+        );
+
+        return;
+      }
+
+      // =================================================
+      // SUCCESS
+      // =================================================
+
       if (response.ok && data.success) {
         setOtpSent(true);
+        setOtp("");
+
+        // Start the frontend 30-second countdown.
+        setResendTimer(
+          Number(data.cooldownSeconds) || 30
+        );
 
         setLoginMessage(
           "OTP sent to your WhatsApp"
@@ -218,6 +288,7 @@ function App() {
   const changeNumber = () => {
     setOtpSent(false);
     setOtp("");
+    setResendTimer(0);
     setLoginMessage("");
   };
 
@@ -232,6 +303,7 @@ function App() {
     setOtp("");
 
     setOtpSent(false);
+    setResendTimer(0);
 
     setLoginLoading(false);
     setLoginMessage("");
@@ -772,6 +844,19 @@ function App() {
                 {loginLoading
                   ? "Verifying..."
                   : "Verify & Login"}
+              </button>
+
+              <button
+                className="secondary-button"
+                onClick={sendOTP}
+                disabled={
+                  loginLoading ||
+                  resendTimer > 0
+                }
+              >
+                {resendTimer > 0
+                  ? `Resend OTP in ${resendTimer}s`
+                  : "Resend OTP"}
               </button>
 
               <button
