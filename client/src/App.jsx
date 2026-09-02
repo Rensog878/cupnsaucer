@@ -4,38 +4,11 @@ import "./App.css";
 // =====================================================
 // API CONFIGURATION
 // =====================================================
-//
-// Vercel Environment Variable:
-//
-// VITE_API_URL=https://api.kqphfa.store
-//
-// Production API:
-// https://api.kqphfa.store
-//
-// The trailing slash is removed automatically so that
-// API calls don't become:
-// https://api.kqphfa.store//api/send-otp
-// =====================================================
 
-const API_URL = (
-  import.meta.env.VITE_API_URL ||
-  "https://api.kqphfa.store"
-).replace(/\/+$/, "");
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:5000";
 
-// =====================================================
-// RAZORPAY PUBLIC KEY
-// =====================================================
-//
-// Vercel Environment Variable:
-//
-// VITE_RAZORPAY_KEY_ID=rzp_test_xxxxxxxxxx
-//
-// IMPORTANT:
-// NEVER put RAZORPAY_KEY_SECRET in this frontend.
-// =====================================================
-
-const RAZORPAY_KEY_ID =
-  import.meta.env.VITE_RAZORPAY_KEY_ID;
+console.log("API URL:", API_URL);
 
 // =====================================================
 // PRODUCTS
@@ -85,10 +58,6 @@ function App() {
 
   const [cart, setCart] = useState([]);
 
-  // =====================================================
-  // PAYMENT STATE
-  // =====================================================
-
   const [paymentLoading, setPaymentLoading] =
     useState(false);
 
@@ -100,9 +69,7 @@ function App() {
   // =====================================================
 
   const sendOTP = async () => {
-    const cleanPhone = phone.trim();
-
-    if (!cleanPhone) {
+    if (!phone.trim()) {
       setLoginMessage(
         "Please enter your WhatsApp number"
       );
@@ -113,6 +80,9 @@ function App() {
     setLoginMessage("");
 
     try {
+      console.log("Sending OTP...");
+      console.log("API:", API_URL);
+
       const response = await fetch(
         `${API_URL}/api/send-otp`,
         {
@@ -122,17 +92,21 @@ function App() {
             "Content-Type": "application/json",
           },
 
+          // IMPORTANT:
+          // Backend stores OTP inside HttpOnly cookie.
+          credentials: "include",
+
           body: JSON.stringify({
-            phone: cleanPhone,
+            phone: phone.trim(),
           }),
         }
       );
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
-        setPhone(cleanPhone);
+      console.log("Send OTP response:", data);
 
+      if (response.ok && data.success) {
         setOtpSent(true);
 
         setLoginMessage(
@@ -141,12 +115,13 @@ function App() {
       } else {
         setLoginMessage(
           data.message ||
+            data.error ||
             "Failed to send OTP"
         );
       }
     } catch (error) {
       console.error(
-        "Send OTP error:",
+        "SEND OTP FRONTEND ERROR:",
         error
       );
 
@@ -163,12 +138,16 @@ function App() {
   // =====================================================
 
   const verifyOTP = async () => {
-    const cleanPhone = phone.trim();
-    const cleanOtp = otp.trim();
-
-    if (!cleanOtp) {
+    if (!otp.trim()) {
       setLoginMessage(
         "Please enter the OTP"
+      );
+      return;
+    }
+
+    if (!/^\d{6}$/.test(otp.trim())) {
+      setLoginMessage(
+        "Please enter a valid 6-digit OTP"
       );
       return;
     }
@@ -177,24 +156,34 @@ function App() {
     setLoginMessage("");
 
     try {
+      console.log("Verifying OTP...");
+
       const response = await fetch(
         `${API_URL}/api/verify-otp`,
         {
           method: "POST",
 
           headers: {
-            "Content-Type":
-              "application/json",
+            "Content-Type": "application/json",
           },
 
+          // IMPORTANT:
+          // Send the HttpOnly OTP cookie back to backend.
+          credentials: "include",
+
           body: JSON.stringify({
-            phone: cleanPhone,
-            otp: cleanOtp,
+            phone: phone.trim(),
+            otp: otp.trim(),
           }),
         }
       );
 
       const data = await response.json();
+
+      console.log(
+        "Verify OTP response:",
+        data
+      );
 
       if (response.ok && data.success) {
         setLoggedIn(true);
@@ -210,7 +199,7 @@ function App() {
       }
     } catch (error) {
       console.error(
-        "Verify OTP error:",
+        "VERIFY OTP FRONTEND ERROR:",
         error
       );
 
@@ -220,6 +209,16 @@ function App() {
     } finally {
       setLoginLoading(false);
     }
+  };
+
+  // =====================================================
+  // CHANGE NUMBER
+  // =====================================================
+
+  const changeNumber = () => {
+    setOtpSent(false);
+    setOtp("");
+    setLoginMessage("");
   };
 
   // =====================================================
@@ -331,7 +330,7 @@ function App() {
   };
 
   // =====================================================
-  // TOTAL
+  // CART TOTAL
   // =====================================================
 
   const total = cart.reduce(
@@ -346,53 +345,49 @@ function App() {
   // =====================================================
 
   const loadRazorpay = () => {
-    return new Promise(
-      (resolve) => {
-        if (window.Razorpay) {
-          resolve(true);
-          return;
-        }
-
-        const existingScript =
-          document.querySelector(
-            'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
-          );
-
-        if (existingScript) {
-          existingScript.addEventListener(
-            "load",
-            () => resolve(true)
-          );
-
-          existingScript.addEventListener(
-            "error",
-            () => resolve(false)
-          );
-
-          return;
-        }
-
-        const script =
-          document.createElement(
-            "script"
-          );
-
-        script.src =
-          "https://checkout.razorpay.com/v1/checkout.js";
-
-        script.async = true;
-
-        script.onload = () =>
-          resolve(true);
-
-        script.onerror = () =>
-          resolve(false);
-
-        document.body.appendChild(
-          script
-        );
+    return new Promise((resolve) => {
+      if (window.Razorpay) {
+        resolve(true);
+        return;
       }
-    );
+
+      const existingScript =
+        document.querySelector(
+          'script[src="https://checkout.razorpay.com/v1/checkout.js"]'
+        );
+
+      if (existingScript) {
+        existingScript.addEventListener(
+          "load",
+          () => resolve(true)
+        );
+
+        existingScript.addEventListener(
+          "error",
+          () => resolve(false)
+        );
+
+        return;
+      }
+
+      const script =
+        document.createElement(
+          "script"
+        );
+
+      script.src =
+        "https://checkout.razorpay.com/v1/checkout.js";
+
+      script.onload = () =>
+        resolve(true);
+
+      script.onerror = () =>
+        resolve(false);
+
+      document.body.appendChild(
+        script
+      );
+    });
   };
 
   // =====================================================
@@ -414,13 +409,6 @@ function App() {
       return;
     }
 
-    if (!RAZORPAY_KEY_ID) {
-      setPaymentStatus(
-        "Razorpay Key ID is missing. Add VITE_RAZORPAY_KEY_ID in Vercel."
-      );
-      return;
-    }
-
     setPaymentLoading(true);
     setPaymentStatus("");
 
@@ -438,13 +426,16 @@ function App() {
         );
 
         setPaymentLoading(false);
-
         return;
       }
 
       // =================================================
       // CREATE ORDER
       // =================================================
+
+      console.log(
+        "Creating Razorpay order..."
+      );
 
       const response =
         await fetch(
@@ -457,19 +448,18 @@ function App() {
                 "application/json",
             },
 
+            credentials: "include",
+
             body: JSON.stringify({
               amount: total,
 
-              phone: phone.trim(),
+              phone: phone,
 
               items: cart.map(
                 (item) => ({
                   id: item.id,
-
                   name: item.name,
-
                   price: item.price,
-
                   quantity:
                     item.quantity,
                 })
@@ -481,41 +471,38 @@ function App() {
       const data =
         await response.json();
 
+      console.log(
+        "Create order response:",
+        data
+      );
+
       if (
         !response.ok ||
-        !data.success
+        !data.success ||
+        !data.order ||
+        !data.key
       ) {
         setPaymentStatus(
           data.message ||
-            "Unable to create order"
+            data.error ||
+            "Unable to create Razorpay order"
         );
 
         setPaymentLoading(false);
-
         return;
       }
 
       const order =
         data.order;
 
-      if (!order || !order.id) {
-        setPaymentStatus(
-          "Invalid order received from server"
-        );
-
-        setPaymentLoading(false);
-
-        return;
-      }
-
       // =================================================
       // RAZORPAY OPTIONS
       // =================================================
 
       const options = {
-        key:
-          data.key ||
-          RAZORPAY_KEY_ID,
+        // Public Razorpay key returned by backend.
+        // No VITE_RAZORPAY_KEY_ID required.
+        key: data.key,
 
         amount:
           order.amount,
@@ -534,12 +521,12 @@ function App() {
 
         prefill: {
           contact:
-            phone.trim(),
+            phone,
         },
 
         notes: {
           phone:
-            phone.trim(),
+            phone,
         },
 
         theme: {
@@ -556,13 +543,10 @@ function App() {
             razorpayResponse
           ) {
             try {
-              setPaymentStatus(
-                "Verifying payment..."
+              console.log(
+                "Razorpay payment response:",
+                razorpayResponse
               );
-
-              // =========================================
-              // VERIFY PAYMENT
-              // =========================================
 
               const verifyResponse =
                 await fetch(
@@ -575,6 +559,9 @@ function App() {
                         "application/json",
                     },
 
+                    credentials:
+                      "include",
+
                     body:
                       JSON.stringify(
                         razorpayResponse
@@ -585,14 +572,17 @@ function App() {
               const verifyData =
                 await verifyResponse.json();
 
+              console.log(
+                "Payment verification response:",
+                verifyData
+              );
+
               if (
                 verifyResponse.ok &&
                 verifyData.success
               ) {
                 setPaymentStatus(
-                  `Payment successful! Payment ID: ${
-                    verifyData.paymentId
-                  }`
+                  `Payment successful! Payment ID: ${verifyData.paymentId}`
                 );
 
                 setCart([]);
@@ -604,7 +594,7 @@ function App() {
               }
             } catch (error) {
               console.error(
-                "Payment verification error:",
+                "PAYMENT VERIFY FRONTEND ERROR:",
                 error
               );
 
@@ -619,7 +609,7 @@ function App() {
           },
 
         // =================================================
-        // RAZORPAY CLOSE
+        // RAZORPAY CLOSED
         // =================================================
 
         modal: {
@@ -632,14 +622,12 @@ function App() {
               setPaymentLoading(
                 false
               );
-
-              setPaymentStatus("");
             },
         },
       };
 
       // =================================================
-      // CREATE RAZORPAY INSTANCE
+      // OPEN RAZORPAY
       // =================================================
 
       const razorpay =
@@ -656,11 +644,11 @@ function App() {
         function (response) {
           console.error(
             "Razorpay payment failed:",
-            response?.error
+            response.error
           );
 
           setPaymentStatus(
-            response?.error
+            response.error
               ?.description ||
               "Payment failed"
           );
@@ -671,19 +659,15 @@ function App() {
         }
       );
 
-      // =================================================
-      // OPEN RAZORPAY
-      // =================================================
-
       razorpay.open();
     } catch (error) {
       console.error(
-        "Payment error:",
+        "PAYMENT ERROR:",
         error
       );
 
       setPaymentStatus(
-        "Something went wrong"
+        "Something went wrong while starting payment"
       );
 
       setPaymentLoading(false);
@@ -697,7 +681,6 @@ function App() {
   if (!loggedIn) {
     return (
       <div className="login-page">
-
         <div className="login-card">
 
           <div className="login-logo">
@@ -721,15 +704,14 @@ function App() {
 
               <input
                 type="tel"
+                inputMode="numeric"
+                autoComplete="tel"
                 placeholder="9876543210"
                 value={phone}
                 onChange={(e) =>
                   setPhone(
                     e.target.value
                   )
-                }
-                disabled={
-                  loginLoading
                 }
               />
 
@@ -747,7 +729,6 @@ function App() {
           ) : (
             <>
               <div className="otp-info">
-
                 <span>
                   OTP sent to
                 </span>
@@ -755,7 +736,6 @@ function App() {
                 <strong>
                   {phone}
                 </strong>
-
               </div>
 
               <div className="input-label">
@@ -765,19 +745,19 @@ function App() {
               <input
                 type="text"
                 inputMode="numeric"
+                autoComplete="one-time-code"
                 maxLength="6"
                 placeholder="Enter 6-digit OTP"
                 value={otp}
                 onChange={(e) =>
                   setOtp(
-                    e.target.value.replace(
-                      /\D/g,
-                      ""
-                    )
+                    e.target.value
+                      .replace(
+                        /\D/g,
+                        ""
+                      )
+                      .slice(0, 6)
                   )
-                }
-                disabled={
-                  loginLoading
                 }
               />
 
@@ -796,17 +776,9 @@ function App() {
 
               <button
                 className="secondary-button"
-                onClick={() => {
-                  setOtpSent(
-                    false
-                  );
-
-                  setOtp("");
-
-                  setLoginMessage(
-                    ""
-                  );
-                }}
+                onClick={
+                  changeNumber
+                }
                 disabled={
                   loginLoading
                 }
@@ -827,7 +799,6 @@ function App() {
           </div>
 
         </div>
-
       </div>
     );
   }
@@ -852,7 +823,6 @@ function App() {
           </div>
 
           <div>
-
             <h1>
               My MERN Store
             </h1>
@@ -861,7 +831,6 @@ function App() {
               Logged in with{" "}
               {phone}
             </p>
-
           </div>
 
         </div>
@@ -1013,7 +982,6 @@ function App() {
 
             {cart.length > 0 && (
               <span className="cart-items-label">
-
                 {cart.reduce(
                   (sum, item) =>
                     sum +
@@ -1021,7 +989,6 @@ function App() {
                   0
                 )}{" "}
                 items
-
               </span>
             )}
 
@@ -1053,7 +1020,9 @@ function App() {
                   (item) => (
                     <div
                       className="cart-item"
-                      key={item.id}
+                      key={
+                        item.id
+                      }
                     >
 
                       <div className="cart-product">
@@ -1116,11 +1085,9 @@ function App() {
                       </div>
 
                       <div className="item-total">
-
                         ₹
                         {item.price *
                           item.quantity}
-
                       </div>
 
                       <button
@@ -1139,10 +1106,6 @@ function App() {
                 )}
 
               </div>
-
-              {/* =================================================
-                  CHECKOUT
-              ================================================= */}
 
               <div className="checkout">
 

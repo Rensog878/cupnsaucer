@@ -2,130 +2,153 @@ const express = require("express");
 const cors = require("cors");
 const Razorpay = require("razorpay");
 const crypto = require("crypto");
+
 require("dotenv").config();
 
 const app = express();
 
 // =====================================================
-// ENVIRONMENT
+// CONFIGURATION
 // =====================================================
 
-const NODE_ENV =
-  process.env.NODE_ENV || "development";
+const PORT =
+  process.env.PORT || 5000;
 
-const isProduction =
-  NODE_ENV === "production";
+const FRONTEND_URL =
+  process.env.FRONTEND_URL ||
+  "https://www.kqphfa.store";
 
 // =====================================================
-// FRONTEND URLS
-// =====================================================
-//
-// Render Environment Variable:
-//
-// FRONTEND_URL=https://kqphfa.store
-//
-// You can also provide multiple origins:
-//
-// FRONTEND_URL=https://kqphfa.store,https://www.kqphfa.store
-//
-// Local development is automatically allowed.
+// MIDDLEWARE
 // =====================================================
 
 const allowedOrigins = [
   "https://kqphfa.store",
   "https://www.kqphfa.store",
+  FRONTEND_URL,
   "http://localhost:5173",
-  "http://localhost:3000",
+  "http://localhost:5174",
 ];
 
-if (process.env.FRONTEND_URL) {
-  const configuredOrigins =
-    process.env.FRONTEND_URL
-      .split(",")
-      .map((origin) => origin.trim())
-      .filter(Boolean);
-
-  for (const origin of configuredOrigins) {
-    if (!allowedOrigins.includes(origin)) {
-      allowedOrigins.push(origin);
-    }
-  }
-}
-
-// =====================================================
-// EXPRESS APP
-// =====================================================
-
-app.set("trust proxy", 1);
-
-// =====================================================
-// CORS
-// =====================================================
-
-const corsOptions = {
-  origin: function (origin, callback) {
-    // Allow requests that don't contain an Origin header.
-    // Useful for health checks, server-to-server requests,
-    // curl, Render health checks, etc.
-    if (!origin) {
-      return callback(null, true);
-    }
-
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-
-    console.error(
-      "CORS BLOCKED ORIGIN:",
-      origin
-    );
-
-    return callback(
-      new Error(
-        "Not allowed by CORS"
-      )
-    );
-  },
-
-  credentials: true,
-
-  methods: [
-    "GET",
-    "POST",
-    "OPTIONS",
-  ],
-
-  allowedHeaders: [
-    "Content-Type",
-    "Authorization",
-  ],
-
-  optionsSuccessStatus: 204,
-};
-
-app.use(cors(corsOptions));
-
-// =====================================================
-// BODY PARSER
-// =====================================================
-
 app.use(
-  express.json({
-    limit: "1mb",
+  cors({
+    origin: function (origin, callback) {
+      // Allow server-to-server requests / tools
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      if (
+        allowedOrigins.includes(origin)
+      ) {
+        return callback(null, true);
+      }
+
+      console.error(
+        "CORS blocked origin:",
+        origin
+      );
+
+      return callback(
+        new Error(
+          "Not allowed by CORS"
+        )
+      );
+    },
+
+    credentials: true,
+
+    methods: [
+      "GET",
+      "POST",
+      "OPTIONS",
+    ],
+
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
 
+app.use(express.json());
+
 // =====================================================
-// REQUEST LOGGER
+// BASIC ERROR HANDLER
 // =====================================================
 
-app.use((req, res, next) => {
-  console.log(
-    `${new Date().toISOString()} ${req.method} ${req.originalUrl}`
-  );
+app.use(
+  (
+    err,
+    req,
+    res,
+    next
+  ) => {
+    console.error(
+      "MIDDLEWARE ERROR:",
+      err
+    );
 
-  next();
-});
+    if (
+      err &&
+      err.message ===
+        "Not allowed by CORS"
+    ) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "CORS origin not allowed",
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message:
+        "Internal server error",
+    });
+  }
+);
+
+// =====================================================
+// ENVIRONMENT VALIDATION
+// =====================================================
+
+console.log(
+  "=========================================="
+);
+
+console.log(
+  "SERVER ENVIRONMENT CHECK"
+);
+
+console.log(
+  "RAZORPAY_KEY_ID:",
+  !!process.env.RAZORPAY_KEY_ID
+);
+
+console.log(
+  "RAZORPAY_KEY_SECRET:",
+  !!process.env.RAZORPAY_KEY_SECRET
+);
+
+console.log(
+  "WASENDER_API_KEY:",
+  !!process.env.WASENDER_API_KEY
+);
+
+console.log(
+  "OTP_SECRET:",
+  !!process.env.OTP_SECRET
+);
+
+console.log(
+  "FRONTEND_URL:",
+  FRONTEND_URL
+);
+
+console.log(
+  "=========================================="
+);
 
 // =====================================================
 // RAZORPAY
@@ -137,51 +160,54 @@ if (
   process.env.RAZORPAY_KEY_ID &&
   process.env.RAZORPAY_KEY_SECRET
 ) {
-  razorpay = new Razorpay({
-    key_id:
-      process.env.RAZORPAY_KEY_ID,
+  razorpay =
+    new Razorpay({
+      key_id:
+        process.env.RAZORPAY_KEY_ID,
 
-    key_secret:
-      process.env.RAZORPAY_KEY_SECRET,
-  });
+      key_secret:
+        process.env
+          .RAZORPAY_KEY_SECRET,
+    });
 }
 
 // =====================================================
 // BASIC ROUTE
 // =====================================================
 
-app.get("/", (req, res) => {
-  res.status(200).json({
-    success: true,
+app.get(
+  "/",
+  (req, res) => {
+    res.status(200).json({
+      success: true,
 
-    message:
-      "WhatsApp OTP + Razorpay API is running",
+      message:
+        "WhatsApp OTP + Razorpay API is running",
 
-    environment: NODE_ENV,
-
-    api: "api.kqphfa.store",
-  });
-});
+      environment:
+        process.env.NODE_ENV ||
+        "development",
+    });
+  }
+);
 
 // =====================================================
 // HEALTH CHECK
 // =====================================================
 
-app.get("/api/health", (req, res) => {
-  res.status(200).json({
-    success: true,
-
-    message: "API is healthy",
-
-    environment: NODE_ENV,
-
-    timestamp:
-      new Date().toISOString(),
-  });
-});
+app.get(
+  "/api/health",
+  (req, res) => {
+    res.status(200).json({
+      success: true,
+      message:
+        "API is healthy",
+    });
+  }
+);
 
 // =====================================================
-// HELPER: NORMALIZE PHONE NUMBER
+// NORMALIZE PHONE NUMBER
 // =====================================================
 
 function normalizePhone(phone) {
@@ -189,45 +215,50 @@ function normalizePhone(phone) {
     return null;
   }
 
-  let number = String(phone).trim();
+  let number =
+    String(phone).trim();
 
-  // ---------------------------------------------------
-  // Remove spaces, +, -, brackets, etc.
-  // ---------------------------------------------------
+  // Remove spaces,
+  // brackets, +, -, etc.
+  number =
+    number.replace(
+      /\D/g,
+      ""
+    );
 
-  number = number.replace(
-    /\D/g,
-    ""
-  );
+  // =================================================
+  // INDIA 10 DIGIT NUMBER
+  // =================================================
 
-  // ---------------------------------------------------
-  // Indian 10-digit number
-  //
   // 6369879061
   // ->
   // 916369879061
-  // ---------------------------------------------------
 
-  if (number.length === 10) {
-    number = "91" + number;
+  if (
+    number.length === 10
+  ) {
+    number =
+      "91" + number;
   }
 
-  // ---------------------------------------------------
-  // Remove leading zero
-  //
+  // =================================================
+  // 0 + NUMBER
+  // =================================================
+
   // 0916369879061
   // ->
   // 916369879061
-  // ---------------------------------------------------
 
-  if (number.startsWith("0")) {
+  if (
+    number.startsWith("0")
+  ) {
     number =
       number.substring(1);
   }
 
-  // ---------------------------------------------------
-  // Indian international number
-  // ---------------------------------------------------
+  // =================================================
+  // INDIA E.164
+  // =================================================
 
   if (
     number.startsWith("91") &&
@@ -236,9 +267,9 @@ function normalizePhone(phone) {
     return "+" + number;
   }
 
-  // ---------------------------------------------------
-  // General international number
-  // ---------------------------------------------------
+  // =================================================
+  // GENERAL INTERNATIONAL E.164
+  // =================================================
 
   if (
     number.length >= 11 &&
@@ -253,33 +284,21 @@ function normalizePhone(phone) {
 // =====================================================
 // OTP SECRET
 // =====================================================
-//
-// IMPORTANT:
-//
-// Set this in Render:
-//
-// OTP_SECRET=your-long-random-secret
-//
-// Do NOT depend on Razorpay secret for OTP signing.
-// =====================================================
 
 function getOtpSecret() {
+  if (
+    !process.env.OTP_SECRET
+  ) {
+    throw new Error(
+      "OTP_SECRET environment variable is missing"
+    );
+  }
+
   return process.env.OTP_SECRET;
 }
 
 // =====================================================
-// OTP TOKEN HELPERS
-// =====================================================
-//
-// OTP is NOT stored in MongoDB.
-// It is stored in a signed HttpOnly cookie.
-//
-// The token contains:
-//
-// phone.otp.expiresAt.signature
-//
-// The signature prevents the browser/user from
-// modifying the OTP or expiration time.
+// CREATE OTP TOKEN
 // =====================================================
 
 function createOtpToken(
@@ -289,12 +308,6 @@ function createOtpToken(
 ) {
   const secret =
     getOtpSecret();
-
-  if (!secret) {
-    throw new Error(
-      "OTP_SECRET is not configured"
-    );
-  }
 
   const payload =
     `${phone}.${otp}.${expiresAt}`;
@@ -308,14 +321,18 @@ function createOtpToken(
       .update(payload)
       .digest("hex");
 
-  return `${payload}.${signature}`;
+  return (
+    `${payload}.${signature}`
+  );
 }
 
 // =====================================================
 // VERIFY OTP TOKEN
 // =====================================================
 
-function verifyOtpToken(token) {
+function verifyOtpToken(
+  token
+) {
   try {
     if (!token) {
       return null;
@@ -324,7 +341,9 @@ function verifyOtpToken(token) {
     const parts =
       token.split(".");
 
-    if (parts.length !== 4) {
+    if (
+      parts.length !== 4
+    ) {
       return null;
     }
 
@@ -336,7 +355,9 @@ function verifyOtpToken(token) {
     ] = parts;
 
     const expiresAt =
-      Number(expiresAtString);
+      Number(
+        expiresAtString
+      );
 
     if (
       !phone ||
@@ -347,26 +368,19 @@ function verifyOtpToken(token) {
       return null;
     }
 
-    // -------------------------------------------------
-    // Check expiration
-    // -------------------------------------------------
+    // =================================================
+    // EXPIRY
+    // =================================================
 
     if (
-      Date.now() > expiresAt
+      Date.now() >
+      expiresAt
     ) {
       return null;
     }
 
     const secret =
       getOtpSecret();
-
-    if (!secret) {
-      console.error(
-        "OTP_SECRET is missing"
-      );
-
-      return null;
-    }
 
     const payload =
       `${phone}.${otp}.${expiresAt}`;
@@ -425,7 +439,7 @@ function verifyOtpToken(token) {
 }
 
 // =====================================================
-// COOKIE HELPERS
+// COOKIE HELPER
 // =====================================================
 
 function getCookie(
@@ -474,14 +488,12 @@ function getCookie(
         )
         .trim();
 
-    if (key === name) {
-      try {
-        return decodeURIComponent(
-          value
-        );
-      } catch {
-        return value;
-      }
+    if (
+      key === name
+    ) {
+      return decodeURIComponent(
+        value
+      );
     }
   }
 
@@ -510,7 +522,10 @@ function setOtpCookie(
     "Max-Age=300",
   ];
 
-  if (isProduction) {
+  if (
+    process.env.NODE_ENV ===
+    "production"
+  ) {
     cookieParts.push(
       "Secure"
     );
@@ -526,20 +541,21 @@ function setOtpCookie(
 // CLEAR OTP COOKIE
 // =====================================================
 
-function clearOtpCookie(res) {
+function clearOtpCookie(
+  res
+) {
   const cookieParts = [
     "otp_token=",
-
     "HttpOnly",
-
     "Path=/",
-
     "SameSite=Lax",
-
     "Max-Age=0",
   ];
 
-  if (isProduction) {
+  if (
+    process.env.NODE_ENV ===
+    "production"
+  ) {
     cookieParts.push(
       "Secure"
     );
@@ -575,87 +591,80 @@ app.post(
         phone,
       } = req.body || {};
 
-      // -------------------------------------------------
-      // Validate phone
-      // -------------------------------------------------
+      // =================================================
+      // VALIDATE PHONE
+      // =================================================
 
       if (!phone) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "WhatsApp number is required",
-          });
+          message:
+            "WhatsApp number is required",
+        });
       }
-
-      // -------------------------------------------------
-      // Normalize phone
-      // -------------------------------------------------
 
       const whatsappNumber =
         normalizePhone(phone);
-
-      if (!whatsappNumber) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-
-            message:
-              "Invalid WhatsApp number. Enter a valid number.",
-          });
-      }
 
       console.log(
         "Normalized phone:",
         whatsappNumber
       );
 
-      // -------------------------------------------------
-      // Check OTP secret
-      // -------------------------------------------------
+      if (
+        !whatsappNumber
+      ) {
+        return res.status(400).json({
+          success: false,
 
-      if (!getOtpSecret()) {
-        console.error(
-          "OTP_SECRET is missing"
-        );
-
-        return res
-          .status(500)
-          .json({
-            success: false,
-
-            message:
-              "OTP configuration is missing",
-          });
+          message:
+            "Invalid WhatsApp number. Enter a valid number.",
+        });
       }
 
-      // -------------------------------------------------
-      // Check Wasender API key
-      // -------------------------------------------------
+      // =================================================
+      // WASENDER KEY
+      // =================================================
 
       if (
-        !process.env.WASENDER_API_KEY
+        !process.env
+          .WASENDER_API_KEY
       ) {
         console.error(
           "WASENDER_API_KEY is missing"
         );
 
-        return res
-          .status(500)
-          .json({
-            success: false,
+        return res.status(500).json({
+          success: false,
 
-            message:
-              "WasenderAPI configuration is missing",
-          });
+          message:
+            "WasenderAPI configuration is missing",
+        });
       }
 
-      // -------------------------------------------------
-      // Generate 6-digit OTP
-      // -------------------------------------------------
+      // =================================================
+      // OTP SECRET
+      // =================================================
+
+      if (
+        !process.env.OTP_SECRET
+      ) {
+        console.error(
+          "OTP_SECRET is missing"
+        );
+
+        return res.status(500).json({
+          success: false,
+
+          message:
+            "OTP configuration is missing",
+        });
+      }
+
+      // =================================================
+      // GENERATE OTP
+      // =================================================
 
       const otp =
         crypto
@@ -665,17 +674,18 @@ app.post(
           )
           .toString();
 
-      // -------------------------------------------------
       // OTP valid for 5 minutes
-      // -------------------------------------------------
-
       const expiresAt =
         Date.now() +
         5 * 60 * 1000;
 
-      // -------------------------------------------------
-      // Create signed OTP token
-      // -------------------------------------------------
+      console.log(
+        "OTP generated successfully"
+      );
+
+      // =================================================
+      // CREATE SIGNED OTP TOKEN
+      // =================================================
 
       const otpToken =
         createOtpToken(
@@ -684,9 +694,13 @@ app.post(
           expiresAt
         );
 
-      // -------------------------------------------------
-      // Send OTP through WasenderAPI
-      // -------------------------------------------------
+      // =================================================
+      // WASENDER REQUEST
+      // =================================================
+
+      console.log(
+        "Calling WasenderAPI..."
+      );
 
       const wasenderResponse =
         await fetch(
@@ -700,10 +714,14 @@ app.post(
 
               "Content-Type":
                 "application/json",
+
+              Accept:
+                "application/json",
             },
 
             body: JSON.stringify({
-              to: whatsappNumber,
+              to:
+                whatsappNumber,
 
               text:
                 `Your login OTP is ${otp}.\n\n` +
@@ -713,14 +731,15 @@ app.post(
           }
         );
 
-      // -------------------------------------------------
-      // Read response safely
-      // -------------------------------------------------
+      // =================================================
+      // READ RESPONSE
+      // =================================================
 
       const responseText =
         await wasenderResponse.text();
 
-      let wasenderData = null;
+      let wasenderData =
+        null;
 
       try {
         wasenderData =
@@ -731,12 +750,13 @@ app.post(
             : null;
       } catch {
         wasenderData = {
-          raw: responseText,
+          raw:
+            responseText,
         };
       }
 
       console.log(
-        "Wasender status:",
+        "Wasender HTTP status:",
         wasenderResponse.status
       );
 
@@ -745,53 +765,74 @@ app.post(
         wasenderData
       );
 
-      // -------------------------------------------------
-      // Wasender failed
-      // -------------------------------------------------
+      // =================================================
+      // HTTP ERROR
+      // =================================================
 
       if (
         !wasenderResponse.ok
       ) {
-        return res
-          .status(500)
-          .json({
-            success: false,
+        return res.status(502).json({
+          success: false,
 
-            message:
-              "WasenderAPI failed to send OTP",
+          message:
+            "WasenderAPI failed to send OTP",
 
-            error:
-              wasenderData?.message ||
-              wasenderData?.error ||
-              "Unknown WasenderAPI error",
-          });
+          error:
+            wasenderData?.message ||
+            wasenderData?.error ||
+            `Wasender returned HTTP ${wasenderResponse.status}`,
+
+          wasenderStatus:
+            wasenderResponse.status,
+        });
       }
 
-      // -------------------------------------------------
-      // Store signed OTP token
-      // -------------------------------------------------
+      // =================================================
+      // API-LEVEL ERROR
+      // =================================================
+
+      if (
+        wasenderData &&
+        wasenderData.success ===
+          false
+      ) {
+        return res.status(502).json({
+          success: false,
+
+          message:
+            "WasenderAPI rejected the OTP request",
+
+          error:
+            wasenderData?.message ||
+            wasenderData?.error ||
+            "WasenderAPI returned success=false",
+        });
+      }
+
+      // =================================================
+      // STORE OTP COOKIE
+      // =================================================
 
       setOtpCookie(
         res,
         otpToken
       );
 
-      // -------------------------------------------------
-      // Success
-      // -------------------------------------------------
+      // =================================================
+      // SUCCESS
+      // =================================================
 
       console.log(
         "OTP sent successfully"
       );
 
-      return res
-        .status(200)
-        .json({
-          success: true,
+      return res.status(200).json({
+        success: true,
 
-          message:
-            "OTP sent successfully to WhatsApp",
-        });
+        message:
+          "OTP sent successfully to WhatsApp",
+      });
     } catch (error) {
       console.error(
         "================================"
@@ -806,17 +847,15 @@ app.post(
         "================================"
       );
 
-      return res
-        .status(500)
-        .json({
-          success: false,
+      return res.status(500).json({
+        success: false,
 
-          message:
-            "Failed to send OTP",
+        message:
+          "Failed to send OTP",
 
-          error:
-            error.message,
-        });
+        error:
+          error.message,
+      });
     }
   }
 );
@@ -830,7 +869,15 @@ app.post(
   (req, res) => {
     try {
       console.log(
+        "================================"
+      );
+
+      console.log(
         "VERIFY OTP REQUEST"
+      );
+
+      console.log(
+        "================================"
       );
 
       const {
@@ -838,42 +885,39 @@ app.post(
         otp,
       } = req.body || {};
 
-      // -------------------------------------------------
-      // Validate request
-      // -------------------------------------------------
+      // =================================================
+      // VALIDATE
+      // =================================================
 
-      if (!phone || !otp) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+      if (
+        !phone ||
+        !otp
+      ) {
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Phone number and OTP are required",
-          });
+          message:
+            "Phone number and OTP are required",
+        });
       }
-
-      // -------------------------------------------------
-      // Normalize phone
-      // -------------------------------------------------
 
       const whatsappNumber =
         normalizePhone(phone);
 
-      if (!whatsappNumber) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+      if (
+        !whatsappNumber
+      ) {
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Invalid phone number",
-          });
+          message:
+            "Invalid phone number",
+        });
       }
 
-      // -------------------------------------------------
-      // Get OTP cookie
-      // -------------------------------------------------
+      // =================================================
+      // GET COOKIE
+      // =================================================
 
       const otpToken =
         getCookie(
@@ -881,25 +925,18 @@ app.post(
           "otp_token"
         );
 
-      console.log(
-        "OTP cookie received:",
-        !!otpToken
-      );
-
       if (!otpToken) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "OTP session not found. Please request a new OTP.",
-          });
+          message:
+            "OTP session not found. Please request a new OTP.",
+        });
       }
 
-      // -------------------------------------------------
-      // Verify signed token
-      // -------------------------------------------------
+      // =================================================
+      // VERIFY SIGNATURE
+      // =================================================
 
       const tokenData =
         verifyOtpToken(
@@ -909,37 +946,33 @@ app.post(
       if (!tokenData) {
         clearOtpCookie(res);
 
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "OTP expired or invalid. Please request a new OTP.",
-          });
+          message:
+            "OTP expired or invalid. Please request a new OTP.",
+        });
       }
 
-      // -------------------------------------------------
-      // Check phone
-      // -------------------------------------------------
+      // =================================================
+      // PHONE CHECK
+      // =================================================
 
       if (
         tokenData.phone !==
         whatsappNumber
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Phone number does not match OTP request",
-          });
+          message:
+            "Phone number does not match OTP request",
+        });
       }
 
-      // -------------------------------------------------
-      // Check OTP
-      // -------------------------------------------------
+      // =================================================
+      // OTP CHECK
+      // =================================================
 
       if (
         String(otp).trim() !==
@@ -947,56 +980,52 @@ app.post(
           tokenData.otp
         )
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Invalid OTP",
-          });
+          message:
+            "Invalid OTP",
+        });
       }
 
-      // -------------------------------------------------
-      // Clear OTP cookie
-      // -------------------------------------------------
+      // =================================================
+      // CLEAR OTP COOKIE
+      // =================================================
 
       clearOtpCookie(res);
 
-      // -------------------------------------------------
+      // =================================================
       // LOGIN SUCCESS
-      // -------------------------------------------------
+      // =================================================
 
       console.log(
-        "OTP verified successfully:",
-        whatsappNumber
+        "OTP verified successfully"
       );
 
-      return res
-        .status(200)
-        .json({
-          success: true,
+      return res.status(200).json({
+        success: true,
 
-          message:
-            "Login successful",
+        message:
+          "Login successful",
 
-          phone:
-            whatsappNumber,
-        });
+        phone:
+          whatsappNumber,
+      });
     } catch (error) {
       console.error(
         "VERIFY OTP ERROR:",
         error
       );
 
-      return res
-        .status(500)
-        .json({
-          success: false,
+      return res.status(500).json({
+        success: false,
 
-          message:
-            "OTP verification failed",
-        });
+        message:
+          "OTP verification failed",
+
+        error:
+          error.message,
+      });
     }
   }
 );
@@ -1038,32 +1067,26 @@ app.post(
       );
 
       console.log(
-        "Items received:",
+        "Items:",
         items
       );
 
-      console.log(
-        "Razorpay configured:",
-        !!razorpay
-      );
+      // =================================================
+      // RAZORPAY CONFIG
+      // =================================================
 
-      // -------------------------------------------------
-      // Validate amount
-      // -------------------------------------------------
+      if (!razorpay) {
+        return res.status(500).json({
+          success: false,
 
-      if (
-        amount === undefined ||
-        amount === null
-      ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-
-            message:
-              "Amount is required",
-          });
+          message:
+            "Razorpay configuration is missing",
+        });
       }
+
+      // =================================================
+      // VALIDATE AMOUNT
+      // =================================================
 
       const numericAmount =
         Number(amount);
@@ -1074,60 +1097,26 @@ app.post(
         ) ||
         numericAmount <= 0
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Invalid amount",
-          });
+          message:
+            "Invalid amount",
+        });
       }
 
-      // -------------------------------------------------
-      // Check Razorpay
-      // -------------------------------------------------
-
-      if (!razorpay) {
-        console.error(
-          "Razorpay configuration missing"
-        );
-
-        return res
-          .status(500)
-          .json({
-            success: false,
-
-            message:
-              "Razorpay configuration is missing",
-          });
-      }
-
-      // -------------------------------------------------
-      // INR -> Paise
-      // -------------------------------------------------
+      // =================================================
+      // INR TO PAISE
+      // =================================================
 
       const amountInPaise =
         Math.round(
           numericAmount * 100
         );
 
-      if (
-        amountInPaise <= 0
-      ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
-
-            message:
-              "Invalid payment amount",
-          });
-      }
-
-      // -------------------------------------------------
-      // Create Razorpay order
-      // -------------------------------------------------
+      // =================================================
+      // CREATE ORDER
+      // =================================================
 
       const order =
         await razorpay.orders.create(
@@ -1149,31 +1138,28 @@ app.post(
         order.id
       );
 
-      // -------------------------------------------------
-      // Return order
-      // -------------------------------------------------
+      // =================================================
+      // SUCCESS
+      // =================================================
 
-      return res
-        .status(200)
-        .json({
-          success: true,
+      return res.status(200).json({
+        success: true,
 
-          order,
+        order,
 
-          key:
-            process.env
-              .RAZORPAY_KEY_ID,
-        });
+        // Public key only.
+        // NEVER send secret.
+        key:
+          process.env
+            .RAZORPAY_KEY_ID,
+      });
     } catch (error) {
       console.error(
         "================================"
       );
 
       console.error(
-        "RAZORPAY CREATE ORDER ERROR:"
-      );
-
-      console.error(
+        "RAZORPAY CREATE ORDER ERROR:",
         error
       );
 
@@ -1181,17 +1167,15 @@ app.post(
         "================================"
       );
 
-      return res
-        .status(500)
-        .json({
-          success: false,
+      return res.status(500).json({
+        success: false,
 
-          message:
-            "Unable to create Razorpay order",
+        message:
+          "Unable to create Razorpay order",
 
-          error:
-            error.message,
-        });
+        error:
+          error.message,
+      });
     }
   }
 );
@@ -1204,70 +1188,56 @@ app.post(
   "/api/verify-payment",
   (req, res) => {
     try {
+      console.log(
+        "================================"
+      );
+
+      console.log(
+        "RAZORPAY VERIFY PAYMENT"
+      );
+
+      console.log(
+        "================================"
+      );
+
       const {
         razorpay_order_id,
         razorpay_payment_id,
         razorpay_signature,
       } = req.body || {};
 
-      console.log(
-        "VERIFY PAYMENT REQUEST"
-      );
-
-      console.log(
-        "Order ID:",
-        razorpay_order_id
-      );
-
-      console.log(
-        "Payment ID:",
-        razorpay_payment_id
-      );
-
-      // -------------------------------------------------
-      // Validate fields
-      // -------------------------------------------------
+      // =================================================
+      // VALIDATE
+      // =================================================
 
       if (
         !razorpay_order_id ||
         !razorpay_payment_id ||
         !razorpay_signature
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Missing Razorpay payment details",
-          });
+          message:
+            "Missing Razorpay payment details",
+        });
       }
-
-      // -------------------------------------------------
-      // Check secret
-      // -------------------------------------------------
 
       if (
         !process.env
           .RAZORPAY_KEY_SECRET
       ) {
-        console.error(
-          "RAZORPAY_KEY_SECRET is missing"
-        );
+        return res.status(500).json({
+          success: false,
 
-        return res
-          .status(500)
-          .json({
-            success: false,
-
-            message:
-              "Razorpay secret is missing",
-          });
+          message:
+            "Razorpay secret is missing",
+        });
       }
 
-      // -------------------------------------------------
-      // Generate signature
-      // -------------------------------------------------
+      // =================================================
+      // GENERATE SIGNATURE
+      // =================================================
 
       const generatedSignature =
         crypto
@@ -1283,9 +1253,9 @@ app.post(
           )
           .digest("hex");
 
-      // -------------------------------------------------
-      // Compare signatures safely
-      // -------------------------------------------------
+      // =================================================
+      // SAFE COMPARISON
+      // =================================================
 
       const generatedBuffer =
         Buffer.from(
@@ -1303,14 +1273,12 @@ app.post(
         generatedBuffer.length !==
         receivedBuffer.length
       ) {
-        return res
-          .status(400)
-          .json({
-            success: false,
+        return res.status(400).json({
+          success: false,
 
-            message:
-              "Payment verification failed",
-          });
+          message:
+            "Payment verification failed",
+        });
       }
 
       const isValid =
@@ -1320,130 +1288,61 @@ app.post(
         );
 
       if (!isValid) {
-        console.error(
-          "Invalid Razorpay signature"
-        );
+        return res.status(400).json({
+          success: false,
 
-        return res
-          .status(400)
-          .json({
-            success: false,
-
-            message:
-              "Payment verification failed",
-          });
+          message:
+            "Payment verification failed",
+        });
       }
 
-      // -------------------------------------------------
-      // Payment verified
-      // -------------------------------------------------
+      // =================================================
+      // VERIFIED
+      // =================================================
 
       console.log(
         "Payment verified:",
         razorpay_payment_id
       );
 
-      return res
-        .status(200)
-        .json({
-          success: true,
+      return res.status(200).json({
+        success: true,
 
-          message:
-            "Payment verified successfully",
+        message:
+          "Payment verified successfully",
 
-          paymentId:
-            razorpay_payment_id,
+        paymentId:
+          razorpay_payment_id,
 
-          orderId:
-            razorpay_order_id,
-        });
+        orderId:
+          razorpay_order_id,
+      });
     } catch (error) {
       console.error(
         "RAZORPAY VERIFY ERROR:",
         error
       );
 
-      return res
-        .status(500)
-        .json({
-          success: false,
-
-          message:
-            "Payment verification error",
-        });
-    }
-  }
-);
-
-// =====================================================
-// 404 HANDLER
-// =====================================================
-
-app.use(
-  (req, res) => {
-    res.status(404).json({
-      success: false,
-
-      message:
-        "API route not found",
-
-      path:
-        req.originalUrl,
-    });
-  }
-);
-
-// =====================================================
-// GLOBAL ERROR HANDLER
-// =====================================================
-
-app.use(
-  (
-    error,
-    req,
-    res,
-    next
-  ) => {
-    console.error(
-      "GLOBAL SERVER ERROR:",
-      error
-    );
-
-    if (
-      error.message ===
-      "Not allowed by CORS"
-    ) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-
-          message:
-            "CORS origin not allowed",
-        });
-    }
-
-    return res
-      .status(500)
-      .json({
+      return res.status(500).json({
         success: false,
 
         message:
-          "Internal server error",
+          "Payment verification error",
+
+        error:
+          error.message,
       });
+    }
   }
 );
 
 // =====================================================
-// LOCAL DEVELOPMENT / RENDER
+// LOCAL DEVELOPMENT
 // =====================================================
 
 if (
   require.main === module
 ) {
-  const PORT =
-    process.env.PORT || 5000;
-
   app.listen(
     PORT,
     () => {
@@ -1460,29 +1359,7 @@ if (
       );
 
       console.log(
-        `Environment: ${NODE_ENV}`
-      );
-
-      console.log(
-        `Server running on port ${PORT}`
-      );
-
-      console.log(
-        `Allowed origins: ${allowedOrigins.join(
-          ", "
-        )}`
-      );
-
-      console.log(
-        `Razorpay configured: ${!!razorpay}`
-      );
-
-      console.log(
-        `Wasender configured: ${!!process.env.WASENDER_API_KEY}`
-      );
-
-      console.log(
-        `OTP secret configured: ${!!process.env.OTP_SECRET}`
+        `Server running on http://localhost:${PORT}`
       );
 
       console.log(
@@ -1493,7 +1370,7 @@ if (
 }
 
 // =====================================================
-// VERCEL / SERVERLESS EXPORT
+// VERCEL / SERVERLESS
 // =====================================================
 
 module.exports = app;
