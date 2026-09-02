@@ -724,9 +724,12 @@ app.post(
                 whatsappNumber,
 
               text:
-                `Your login OTP is ${otp}.\n\n` +
-                `This OTP is valid for 5 minutes.\n\n` +
-                `Do not share this OTP with anyone.`,
+`🔐 Cup & Saucer Login
+
+Your verification code is *${otp}*.
+
+This code expires in 5 minutes.
+Please do not share this code with anyone.`
             }),
           }
         );
