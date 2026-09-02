@@ -1,7 +1,62 @@
-/* =========================================
-   CUP & SAUCER — CASUAL / AESTHETIC UI
-   Clean • Warm • Minimal • Properly Aligned
-========================================= */
+/* =========================================================
+   CUP & SAUCER
+   PREMIUM RESPONSIVE E-COMMERCE UI
+   Desktop • Laptop • Tablet • Mobile
+   ========================================================= */
+
+:root {
+  --bg: #f7f5f1;
+  --surface: #ffffff;
+  --surface-soft: #faf9f6;
+
+  --text: #171512;
+  --text-soft: #68625b;
+  --text-muted: #918a82;
+
+  --border: #e8e3dc;
+
+  --accent: #22201d;
+  --accent-hover: #3b3732;
+
+  --success: #6d866f;
+  --danger: #b35d54;
+
+  --radius-lg: 24px;
+  --radius-md: 16px;
+  --radius-sm: 11px;
+
+  --shadow-sm:
+    0 4px 16px rgba(35, 29, 23, 0.05);
+
+  --shadow-md:
+    0 14px 40px rgba(35, 29, 23, 0.08);
+
+  --shadow-lg:
+    0 25px 70px rgba(35, 29, 23, 0.12);
+
+  --font:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-family: var(--font);
+  color: var(--text);
+  background: var(--bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
 
 * {
   box-sizing: border-box;
@@ -13,15 +68,21 @@ html {
 
 body {
   margin: 0;
-  font-family:
-    Inter,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
-  background: #f8f6f2;
-  color: #292724;
-  -webkit-font-smoothing: antialiased;
+  min-width: 320px;
+  background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(220, 203, 181, 0.18),
+      transparent 28%
+    ),
+    radial-gradient(
+      circle at 90% 30%,
+      rgba(210, 194, 174, 0.12),
+      transparent 25%
+    ),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--font);
 }
 
 button,
@@ -33,10 +94,11 @@ button {
   border: 0;
   cursor: pointer;
   transition:
-    transform 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease,
-    opacity 0.18s ease;
+    transform 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    opacity 0.2s ease;
 }
 
 button:disabled {
@@ -45,342 +107,628 @@ button:disabled {
   transform: none !important;
 }
 
+img {
+  max-width: 100%;
+}
 
-/* =========================================
-   LOGIN
-========================================= */
+
+/* =========================================================
+   ROOT
+   ========================================================= */
+
+#root {
+  width: 100%;
+  min-height: 100svh;
+  margin: 0 auto;
+}
+
+
+/* =========================================================
+   LOGIN PAGE
+   ========================================================= */
 
 .login-page {
-  min-height: 100vh;
-  padding: 24px;
+  min-height: 100svh;
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
+  padding: 32px 20px;
+
+  position: relative;
+  overflow: hidden;
+
   background:
     radial-gradient(
       circle at 15% 15%,
-      rgba(215, 190, 158, 0.22),
+      rgba(212, 190, 164, 0.28),
       transparent 30%
     ),
     radial-gradient(
       circle at 85% 85%,
-      rgba(180, 150, 115, 0.12),
+      rgba(181, 156, 127, 0.18),
       transparent 30%
     ),
-    #f8f6f2;
+    #f7f5f1;
 }
 
+.login-page::before {
+  content: "";
+  position: absolute;
+
+  width: 420px;
+  height: 420px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(120, 102, 82, 0.08);
+
+  top: -180px;
+  left: -180px;
+}
+
+.login-page::after {
+  content: "";
+  position: absolute;
+
+  width: 500px;
+  height: 500px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(120, 102, 82, 0.06);
+
+  right: -240px;
+  bottom: -250px;
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
+
 .login-card {
-  width: 100%;
-  max-width: 410px;
-  padding: 38px 34px;
-  background: #fffdf9;
-  border: 1px solid #eee8df;
-  border-radius: 22px;
+  position: relative;
+  z-index: 2;
+
+  width: min(100%, 430px);
+
+  padding: 44px 38px;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.98),
+      rgba(252, 249, 244, 0.98)
+    );
+
+  border: 1px solid rgba(224, 216, 206, 0.9);
+
+  border-radius: 28px;
+
   text-align: center;
 
   box-shadow:
-    0 18px 45px rgba(63, 48, 34, 0.08),
-    0 3px 10px rgba(63, 48, 34, 0.04);
+    0 35px 90px rgba(56, 43, 31, 0.10),
+    0 8px 25px rgba(56, 43, 31, 0.06);
+}
+
+.login-card::before {
+  content: "C&S";
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 58px;
+  height: 58px;
+
+  margin: 0 auto 22px;
+
+  border-radius: 18px;
+
+  background: #292622;
+
+  color: #fff;
+
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 1px;
+
+  box-shadow:
+    0 12px 25px rgba(41, 38, 34, 0.18);
 }
 
 .login-card h1 {
   margin: 0 0 8px;
-  font-size: 28px;
-  line-height: 1.2;
-  font-weight: 750;
-  letter-spacing: -0.7px;
-  color: #292724;
+
+  color: #171512;
+
+  font-size: clamp(27px, 5vw, 34px);
+  line-height: 1.15;
+
+  font-weight: 800;
+  letter-spacing: -1.1px;
 }
 
 .login-card h2 {
-  margin: 0 0 8px;
+  margin: 0 0 9px;
+
+  color: #292622;
+
   font-size: 21px;
   line-height: 1.3;
-  font-weight: 650;
+
+  font-weight: 700;
 }
 
 .login-card p {
-  margin: 0 0 22px;
-  color: #817a72;
+  margin: 0 0 25px;
+
+  color: var(--text-soft);
+
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
+
+
+/* =========================================================
+   LOGIN INPUT
+   ========================================================= */
 
 .login-card input {
   width: 100%;
-  height: 50px;
-  padding: 0 15px;
+  height: 54px;
+
+  padding: 0 17px;
+
   margin: 7px 0;
 
-  border: 1px solid #ddd6cd;
-  border-radius: 11px;
+  border: 1px solid #ded8d0;
+  border-radius: 13px;
 
   outline: none;
-  background: #faf8f4;
-  color: #292724;
+
+  background: #faf9f6;
+  color: var(--text);
+
   font-size: 15px;
 
   transition:
-    border-color 0.18s ease,
-    background 0.18s ease,
-    box-shadow 0.18s ease;
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .login-card input::placeholder {
   color: #aaa39b;
 }
 
-.login-card input:focus {
-  background: #ffffff;
-  border-color: #a68a68;
-  box-shadow: 0 0 0 3px rgba(166, 138, 104, 0.12);
+.login-card input:hover {
+  border-color: #cbc2b8;
 }
+
+.login-card input:focus {
+  background: #fff;
+
+  border-color: #9b8469;
+
+  box-shadow:
+    0 0 0 4px rgba(155, 132, 105, 0.11);
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
 
 .login-card button {
   width: 100%;
-  height: 50px;
-  margin-top: 10px;
+  min-height: 54px;
 
-  border-radius: 11px;
-  background: #292724;
-  color: #ffffff;
+  margin-top: 12px;
+
+  border-radius: 13px;
+
+  background: #24211e;
+  color: #fff;
 
   font-size: 15px;
-  font-weight: 650;
+  font-weight: 750;
+
+  box-shadow:
+    0 8px 20px rgba(36, 33, 30, 0.14);
 }
 
 .login-card button:hover:not(:disabled) {
-  background: #403b36;
-  transform: translateY(-1px);
-  box-shadow: 0 7px 18px rgba(41, 39, 36, 0.15);
+  background: #3c3732;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 13px 27px rgba(36, 33, 30, 0.18);
 }
 
+.login-card button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+
+/* =========================================================
+   SECONDARY BUTTON
+   ========================================================= */
+
 .secondary-button {
-  background: #eee9e2 !important;
-  color: #403b36 !important;
+  background: #eeeae4 !important;
+  color: #3d3934 !important;
+
+  box-shadow: none !important;
 }
 
 .secondary-button:hover:not(:disabled) {
-  background: #e4ded5 !important;
+  background: #e3ddd5 !important;
 }
+
+
+/* =========================================================
+   MESSAGE
+   ========================================================= */
 
 .message {
   margin-top: 16px;
-  padding: 11px 13px;
 
-  border-radius: 10px;
-  background: #f3efe9;
+  padding: 12px 14px;
+
+  border: 1px solid #e9e2da;
+  border-radius: 12px;
+
+  background: #f5f1eb;
 
   color: #665f57;
+
   font-size: 13px;
-  line-height: 1.45;
+  line-height: 1.5;
+
   font-weight: 600;
 }
 
 
-/* =========================================
+/* =========================================================
    HEADER
-========================================= */
+   ========================================================= */
 
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
+  z-index: 100;
 
-  min-height: 76px;
-  padding: 14px 6vw;
+  width: 100%;
+  min-height: 78px;
+
+  padding: 15px clamp(18px, 5vw, 72px);
 
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 20px;
 
-  background: rgba(255, 253, 249, 0.94);
-  backdrop-filter: blur(14px);
+  gap: 24px;
 
-  border-bottom: 1px solid #eee8df;
+  background:
+    rgba(255, 253, 249, 0.88);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border-bottom: 1px solid rgba(224, 217, 208, 0.75);
 }
 
 .header h1 {
   margin: 0;
-  color: #292724;
 
-  font-size: 23px;
-  line-height: 1.2;
-  font-weight: 750;
-  letter-spacing: -0.5px;
+  color: #1c1916;
+
+  font-size: clamp(20px, 2.5vw, 27px);
+  line-height: 1.1;
+
+  font-weight: 850;
+
+  letter-spacing: -0.8px;
 }
 
 .header p {
-  margin: 4px 0 0;
-  color: #8b847c;
-  font-size: 13px;
+  margin: 5px 0 0;
+
+  color: #898179;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  font-weight: 500;
 }
+
+
+/* =========================================================
+   CART COUNT
+   ========================================================= */
 
 .cart-count {
-  padding: 9px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  border-radius: 20px;
-  background: #292724;
-  color: white;
+  min-height: 40px;
+
+  padding: 0 16px;
+
+  border-radius: 999px;
+
+  background: #24211e;
+  color: #fff;
 
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 750;
+
+  box-shadow:
+    0 7px 18px rgba(36, 33, 30, 0.13);
 }
 
 
-/* =========================================
+/* =========================================================
    MAIN
-========================================= */
+   ========================================================= */
 
 main {
-  width: min(1080px, calc(100% - 40px));
+  width: min(1180px, calc(100% - 40px));
+
   margin: 0 auto;
-  padding: 42px 0 70px;
+
+  padding: 58px 0 90px;
 }
+
+
+/* =========================================================
+   SECTION TITLES
+   ========================================================= */
 
 .products h2,
 .cart h2 {
-  margin: 0 0 22px;
+  margin: 0 0 25px;
 
-  color: #292724;
-  font-size: 25px;
-  line-height: 1.25;
-  font-weight: 750;
-  letter-spacing: -0.5px;
+  color: #1d1a17;
+
+  font-size: clamp(25px, 3vw, 32px);
+  line-height: 1.2;
+
+  font-weight: 800;
+
+  letter-spacing: -0.8px;
+}
+
+.products h2::after {
+  content: "";
+
+  display: block;
+
+  width: 42px;
+  height: 3px;
+
+  margin-top: 13px;
+
+  border-radius: 99px;
+
+  background: #292622;
 }
 
 
-/* =========================================
-   PRODUCTS
-========================================= */
+/* =========================================================
+   PRODUCT GRID
+   ========================================================= */
 
 .product-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 24px;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: clamp(20px, 3vw, 32px);
 }
 
+
+/* =========================================================
+   PRODUCT CARD
+   ========================================================= */
+
 .product-card {
-  padding: 14px;
+  position: relative;
 
-  background: #fffdf9;
-  border: 1px solid #eee8df;
-  border-radius: 18px;
+  padding: 15px;
 
-  box-shadow: 0 7px 25px rgba(63, 48, 34, 0.055);
+  background: rgba(255, 255, 255, 0.92);
+
+  border: 1px solid #e8e2da;
+
+  border-radius: 22px;
 
   overflow: hidden;
 
+  box-shadow: var(--shadow-sm);
+
   transition:
-    transform 0.22s ease,
-    box-shadow 0.22s ease;
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
 }
 
 .product-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgba(63, 48, 34, 0.09);
+  transform: translateY(-7px);
+
+  border-color: #ddd4ca;
+
+  box-shadow: var(--shadow-md);
 }
+
+
+/* =========================================================
+   PRODUCT IMAGE
+   ========================================================= */
 
 .product-card img {
   width: 100%;
-  height: 245px;
+
+  height: clamp(260px, 32vw, 390px);
 
   display: block;
 
   object-fit: cover;
   object-position: center;
 
-  border-radius: 13px;
+  border-radius: 16px;
+
   background: #eee9e2;
+
+  transition:
+    transform 0.5s ease;
 }
 
-.product-card h3 {
-  margin: 15px 3px 5px;
+.product-card:hover img {
+  transform: scale(1.025);
+}
 
-  color: #292724;
-  font-size: 18px;
-  line-height: 1.35;
-  font-weight: 700;
+
+/* =========================================================
+   PRODUCT CONTENT
+   ========================================================= */
+
+.product-card h3 {
+  margin: 20px 5px 7px;
+
+  color: #211e1a;
+
+  font-size: clamp(18px, 2vw, 21px);
+  line-height: 1.3;
+
+  font-weight: 750;
+
+  letter-spacing: -0.3px;
 }
 
 .product-card p {
-  margin: 4px 3px;
+  margin: 5px;
 
-  color: #817a72;
+  color: #817970;
+
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.55;
 }
+
+
+/* =========================================================
+   PRICE
+   ========================================================= */
 
 .price {
-  margin: 12px 3px 14px !important;
+  margin: 15px 5px 16px !important;
 
-  color: #292724;
-  font-size: 21px;
-  line-height: 1;
-  font-weight: 750;
+  color: #191714 !important;
+
+  font-size: 24px !important;
+  line-height: 1 !important;
+
+  font-weight: 850 !important;
+
+  letter-spacing: -0.5px;
 }
+
+
+/* =========================================================
+   ADD TO CART
+   ========================================================= */
 
 .product-card button {
   width: 100%;
-  height: 45px;
+  min-height: 50px;
 
-  margin-top: 4px;
+  margin-top: 5px;
 
-  border-radius: 10px;
+  border-radius: 12px;
 
-  background: #292724;
-  color: white;
+  background: #25221f;
+  color: #fff;
 
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 750;
+
+  box-shadow:
+    0 7px 17px rgba(37, 34, 31, 0.12);
 }
 
 .product-card button:hover:not(:disabled) {
-  background: #403b36;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 16px rgba(41, 39, 36, 0.14);
+  background: #403a35;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 11px 22px rgba(37, 34, 31, 0.17);
+}
+
+.product-card button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 
-/* =========================================
+/* =========================================================
    CART
-========================================= */
+   ========================================================= */
 
 .cart {
-  margin-top: 42px;
-  padding: 25px;
+  margin-top: 60px;
 
-  background: #fffdf9;
-  border: 1px solid #eee8df;
-  border-radius: 18px;
+  padding: clamp(22px, 4vw, 34px);
 
-  box-shadow: 0 7px 25px rgba(63, 48, 34, 0.055);
+  background:
+    linear-gradient(
+      145deg,
+      #ffffff,
+      #fbfaf7
+    );
+
+  border: 1px solid #e7e0d8;
+
+  border-radius: 22px;
+
+  box-shadow: var(--shadow-sm);
 }
 
 .cart h2 {
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 
-/* =========================================
+/* =========================================================
    CART ITEM
-========================================= */
+   ========================================================= */
 
 .cart-item {
-  min-height: 92px;
+  min-height: 100px;
 
   display: grid;
-  grid-template-columns: 78px minmax(120px, 1fr) auto auto auto;
+
+  grid-template-columns:
+    82px
+    minmax(150px, 1fr)
+    auto
+    auto
+    auto;
 
   align-items: center;
-  gap: 16px;
 
-  padding: 16px 0;
+  gap: 18px;
 
-  border-bottom: 1px solid #eee8df;
+  padding: 18px 0;
+
+  border-bottom: 1px solid #ece6df;
 }
 
 .cart-item:last-child {
@@ -388,153 +736,182 @@ main {
 }
 
 
-/* Small, properly proportioned cart image */
+/* =========================================================
+   CART IMAGE
+   ========================================================= */
 
 .cart-item img {
-  width: 78px;
-  height: 78px;
+  width: 82px;
+  height: 82px;
 
   display: block;
 
   object-fit: cover;
-  object-position: center;
 
-  border-radius: 11px;
+  border-radius: 13px;
+
   background: #eee9e2;
+
+  border: 1px solid #ebe4dc;
 }
 
 
-/* =========================================
+/* =========================================================
    CART TEXT
-========================================= */
+   ========================================================= */
 
 .cart-item h3 {
-  margin: 0 0 4px;
+  margin: 0 0 5px;
 
-  color: #292724;
+  color: #28241f;
+
   font-size: 15px;
   line-height: 1.35;
-  font-weight: 700;
+
+  font-weight: 750;
 }
 
 .cart-item p {
   margin: 0;
 
-  color: #8b847c;
+  color: #898178;
+
   font-size: 13px;
   line-height: 1.45;
 }
 
 
-/* =========================================
+/* =========================================================
    QUANTITY
-========================================= */
+   ========================================================= */
 
 .quantity {
   display: flex;
+
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+
+  gap: 9px;
 }
 
 .quantity button {
-  width: 31px;
-  height: 31px;
+  width: 34px;
+  height: 34px;
+
   padding: 0;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  border-radius: 8px;
+  border-radius: 9px;
 
   background: #f0ece6;
-  color: #403b36;
+  color: #39352f;
 
   font-size: 17px;
-  font-weight: 700;
+  font-weight: 750;
 }
 
 .quantity button:hover:not(:disabled) {
-  background: #e4ded5;
+  background: #e2dcd4;
+
+  transform: scale(1.04);
 }
 
 .quantity span {
-  min-width: 22px;
+  min-width: 25px;
 
   text-align: center;
 
-  color: #403b36;
+  color: #302c27;
+
   font-size: 14px;
-  font-weight: 700;
-}
-
-
-/* =========================================
-   REMOVE
-========================================= */
-
-.remove {
-  padding: 8px 11px;
-
-  border-radius: 8px;
-
-  background: transparent;
-  color: #a65d55;
-
-  font-size: 13px;
-  font-weight: 600;
-}
-
-.remove:hover:not(:disabled) {
-  background: #f8ebe9;
-  color: #914b44;
-}
-
-
-/* =========================================
-   TOTAL
-========================================= */
-
-.total {
-  margin: 20px 0 0;
-  padding-top: 18px;
-
-  border-top: 1px solid #eee8df;
-
-  text-align: right;
-
-  color: #292724;
-  font-size: 21px;
-  line-height: 1.3;
   font-weight: 750;
 }
 
 
-/* =========================================
+/* =========================================================
+   REMOVE
+   ========================================================= */
+
+.remove {
+  padding: 9px 12px;
+
+  border-radius: 9px;
+
+  background: transparent;
+
+  color: var(--danger);
+
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.remove:hover:not(:disabled) {
+  background: #f9ecea;
+
+  color: #984b44;
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.total {
+  margin: 22px 0 0;
+
+  padding-top: 20px;
+
+  border-top: 1px solid #e7e0d8;
+
+  text-align: right;
+
+  color: #1e1b18;
+
+  font-size: 24px;
+  line-height: 1.3;
+
+  font-weight: 850;
+
+  letter-spacing: -0.4px;
+}
+
+
+/* =========================================================
    PAYMENT BUTTON
-========================================= */
+   ========================================================= */
 
 .pay-button {
   width: 100%;
-  height: 50px;
+  min-height: 54px;
 
-  margin-top: 16px;
+  margin-top: 18px;
 
-  border-radius: 11px;
+  border-radius: 13px;
 
-  background: #6f8f72;
-  color: #ffffff;
+  background: #718c74;
+  color: #fff;
 
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 750;
 
-  box-shadow: 0 6px 16px rgba(111, 143, 114, 0.16);
+  box-shadow:
+    0 9px 22px rgba(113, 140, 116, 0.17);
 }
 
 .pay-button:hover:not(:disabled) {
-  background: #5e7d61;
-  transform: translateY(-1px);
-  box-shadow: 0 9px 21px rgba(111, 143, 114, 0.22);
+  background: #5e795f;
+
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 13px 27px rgba(113, 140, 116, 0.23);
+}
+
+.pay-button:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .pay-button:disabled {
@@ -543,145 +920,284 @@ main {
 }
 
 
-/* =========================================
+/* =========================================================
    STATUS
-========================================= */
+   ========================================================= */
 
 .status {
-  margin-top: 15px;
-  padding: 12px 14px;
+  margin-top: 16px;
 
-  border: 1px solid #eee8df;
-  border-radius: 10px;
+  padding: 13px 15px;
+
+  border: 1px solid #e8e1d9;
+
+  border-radius: 11px;
 
   background: #f7f4ef;
-  color: #716a62;
+
+  color: #746c63;
 
   font-size: 13px;
-  line-height: 1.5;
+  line-height: 1.55;
 
   word-break: break-word;
 }
 
 
-/* =========================================
+/* =========================================================
    LOGOUT
-========================================= */
+   ========================================================= */
 
 .logout-button {
-  padding: 9px 14px;
+  padding: 10px 15px;
 
-  border: 1px solid #e5ded5;
-  border-radius: 9px;
+  border: 1px solid #e2dbd3;
 
-  background: #fffdf9;
-  color: #8e504a;
+  border-radius: 10px;
+
+  background: rgba(255, 255, 255, 0.75);
+
+  color: #8f5049;
 
   font-size: 13px;
-  font-weight: 650;
+  font-weight: 700;
 }
 
 .logout-button:hover:not(:disabled) {
-  background: #f8ebe9;
-  border-color: #ead0cc;
+  background: #f9ecea;
+
+  border-color: #e4c9c4;
 }
 
 
-/* =========================================
-   MOBILE
-========================================= */
+/* =========================================================
+   TABLET
+   ========================================================= */
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
 
   .header {
-    padding: 13px 20px;
+    padding-left: 28px;
+    padding-right: 28px;
   }
 
   main {
-    width: min(100% - 28px, 600px);
-    padding-top: 30px;
+    width: min(100% - 36px, 760px);
+
+    padding-top: 45px;
+  }
+
+  .product-grid {
+    gap: 20px;
+  }
+
+  .product-card img {
+    height: 300px;
+  }
+
+  .cart-item {
+    grid-template-columns:
+      76px
+      minmax(0, 1fr)
+      auto;
+  }
+
+  .cart-item .quantity {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+
+  .cart-item .remove {
+    grid-column: 3;
+    grid-row: 2;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 700px) {
+
+  .header {
+    min-height: 70px;
+
+    padding: 12px 18px;
+
+    gap: 12px;
+  }
+
+  .header h1 {
+    font-size: 21px;
+  }
+
+  .header p {
+    font-size: 11px;
+  }
+
+  .cart-count {
+    min-height: 37px;
+
+    padding: 0 13px;
+
+    font-size: 12px;
+  }
+
+  main {
+    width: calc(100% - 28px);
+
+    padding: 34px 0 60px;
+  }
+
+  .products h2,
+  .cart h2 {
+    font-size: 25px;
   }
 
   .product-grid {
     grid-template-columns: 1fr;
+
     gap: 18px;
   }
 
+  .product-card {
+    padding: 12px;
+
+    border-radius: 19px;
+  }
+
   .product-card img {
-    height: 235px;
+    height: min(72vw, 360px);
+
+    border-radius: 14px;
+  }
+
+  .product-card h3 {
+    margin-top: 17px;
+
+    font-size: 19px;
+  }
+
+  .price {
+    font-size: 22px !important;
   }
 
   .cart {
+    margin-top: 42px;
+
     padding: 20px 16px;
+
+    border-radius: 18px;
   }
 
   .cart-item {
-    grid-template-columns: 68px minmax(0, 1fr);
+    grid-template-columns:
+      68px
+      minmax(0, 1fr);
+
     gap: 12px;
+
+    padding: 15px 0;
   }
 
   .cart-item img {
     width: 68px;
     height: 68px;
 
-    grid-row: span 2;
+    grid-row: span 3;
   }
 
-  .quantity {
+  .cart-item .quantity {
+    grid-column: 2;
+
     justify-content: flex-start;
-    margin-top: 5px;
+
+    margin-top: 3px;
   }
 
-  .remove {
+  .cart-item .remove {
+    grid-column: 2;
+    grid-row: auto;
+
     justify-self: start;
-    margin-top: 4px;
+
+    margin-top: 1px;
   }
 
   .total {
     text-align: left;
+
+    font-size: 22px;
   }
 }
 
 
-/* =========================================
-   SMALL MOBILE
-========================================= */
+/* =========================================================
+   SMALL PHONES
+   ========================================================= */
 
 @media (max-width: 430px) {
 
   .login-page {
-    padding: 15px;
+    padding: 16px;
   }
 
   .login-card {
-    padding: 30px 20px;
-    border-radius: 19px;
+    padding: 34px 20px;
+
+    border-radius: 22px;
+  }
+
+  .login-card::before {
+    width: 52px;
+    height: 52px;
+
+    margin-bottom: 18px;
+
+    border-radius: 16px;
   }
 
   .login-card h1 {
-    font-size: 25px;
+    font-size: 27px;
   }
 
   .login-card h2 {
     font-size: 19px;
   }
 
+  .login-card input,
+  .login-card button {
+    min-height: 52px;
+    height: 52px;
+  }
+
   .header {
-    min-height: 68px;
-    padding: 12px 15px;
+    min-height: 65px;
+
+    padding: 10px 14px;
   }
 
   .header h1 {
-    font-size: 20px;
+    font-size: 19px;
   }
 
   .header p {
-    font-size: 12px;
+    display: none;
+  }
+
+  .cart-count {
+    min-height: 34px;
+
+    padding: 0 11px;
+
+    font-size: 11px;
   }
 
   main {
-    width: calc(100% - 22px);
-    padding: 26px 0 50px;
+    width: calc(100% - 20px);
+
+    padding: 28px 0 45px;
   }
 
   .products h2,
@@ -690,27 +1206,56 @@ main {
   }
 
   .product-card {
-    padding: 12px;
-    border-radius: 16px;
+    padding: 10px;
+
+    border-radius: 17px;
   }
 
   .product-card img {
-    height: 215px;
+    height: 230px;
+
     border-radius: 12px;
   }
 
+  .product-card h3 {
+    margin: 15px 4px 5px;
+
+    font-size: 17px;
+  }
+
+  .product-card p {
+    font-size: 13px;
+  }
+
+  .price {
+    margin-top: 13px !important;
+
+    font-size: 21px !important;
+  }
+
+  .product-card button {
+    min-height: 48px;
+  }
+
   .cart {
-    margin-top: 30px;
+    margin-top: 32px;
+
+    padding: 17px 13px;
+
     border-radius: 16px;
   }
 
   .cart-item img {
-    width: 62px;
-    height: 62px;
+    width: 60px;
+    height: 60px;
   }
 
   .cart-item {
-    grid-template-columns: 62px minmax(0, 1fr);
+    grid-template-columns:
+      60px
+      minmax(0, 1fr);
+
+    gap: 10px;
   }
 
   .cart-item h3 {
@@ -721,7 +1266,89 @@ main {
     font-size: 12px;
   }
 
+  .quantity button {
+    width: 31px;
+    height: 31px;
+  }
+
   .total {
     font-size: 20px;
+  }
+
+  .pay-button {
+    min-height: 51px;
+  }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+   ========================================================= */
+
+@media (max-width: 350px) {
+
+  .login-card {
+    padding: 28px 16px;
+  }
+
+  .login-card h1 {
+    font-size: 24px;
+  }
+
+  .header h1 {
+    font-size: 17px;
+  }
+
+  .cart-count {
+    padding: 0 9px;
+  }
+
+  main {
+    width: calc(100% - 16px);
+  }
+
+  .product-card img {
+    height: 205px;
+  }
+}
+
+
+/* =========================================================
+   TOUCH DEVICES
+   ========================================================= */
+
+@media (hover: none) {
+
+  .product-card:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .product-card:hover img {
+    transform: none;
+  }
+
+  .product-card button:hover,
+  .login-card button:hover,
+  .pay-button:hover {
+    transform: none;
+  }
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }
