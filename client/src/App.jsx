@@ -33,96 +33,239 @@ const OTP_COOLDOWN_STORAGE_PREFIX =
 // PRODUCTS
 // =====================================================
 
+// =====================================================
+// PRODUCTS
+// =====================================================
+
 const products = [
   {
     id: 1,
 
-    name: "Sony ULT FIELD 1",
+    name:
+      "boAt Stone 350 Pro Plus",
 
-    model: "SRS-ULT10",
+    model:
+      "HA0202",
 
-    brand: "Sony",
+    brand:
+      "boAt",
 
-    price: 9990,
+    price:
+      1699,
 
-    mrp: 16990,
+    mrp:
+      4990,
 
     image:
-      "https://sony.scene7.com/is/image/sonyglobalsolutions/01-23?$large360ViewerImage$=",
+      "https://www.boat-lifestyle.com/cdn/shop/files/Stone_350_Pro_Plus_1.png",
 
     description:
-      "Portable Bluetooth speaker with ULT POWER SOUND, up to 12 hours of battery life, IP67 water and dust resistance, Bluetooth 5.3 and hands-free calling.",
+      "16W Bluetooth speaker with boAt Signature Sound, RGB LED lights, TWS pairing, hands-free calling, voice assistant support and up to 8 hours of playtime.",
 
     specs: {
-      battery: "Up to 12 hours",
+      battery:
+        "Up to 8 hours",
 
-      bluetooth: "5.3",
+      bluetooth:
+        "5.3",
 
-      protection: "IP67",
+      protection:
+        "IPX5",
 
-      frequency: "20 Hz – 20 kHz",
+      frequency:
+        "Not specified",
 
-      weight: "Approx. 650 g",
+      weight:
+        "Not specified",
 
-      dimensions: "206 × 77 × 76 mm",
+      dimensions:
+        "240 × 92 × 92 mm",
 
-      codec: "SBC, AAC",
+      codec:
+        "Not specified",
 
-      charging: "USB Type-C",
+      charging:
+        "USB Type-C",
 
-      speaker: "1 Woofer + 1 Tweeter",
+      speaker:
+        "2 × 2-inch drivers",
 
-      app: "Sony | Music Center",
+      app:
+        "Not specified",
     },
   },
 
   {
     id: 2,
 
-    name: "JBL Go 4",
+    name:
+      "Sony ULT FIELD 3",
 
-    model: "GO 4",
+    model:
+      "SRS-ULT30",
 
-    brand: "JBL",
+    brand:
+      "Sony",
 
-    price: 3499,
+    price:
+      17990,
 
-    mrp: 5499,
+    mrp:
+      24990,
 
     image:
-      "https://in.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw96fc93ec/JBL_GO_4_HERO_BLACK_48156_x4.png?sh=535&sw=535",
+      "https://sony.scene7.com/is/image/sonyglobalsolutions/ULT-FIELD-3-Forest-Grey?$large360ViewerImage$=",
 
     description:
-      "Ultra-portable Bluetooth speaker with JBL Pro Sound, punchy bass, IP67 waterproof and dustproof protection, USB-C charging and up to 7 hours of playtime.",
+      "Portable wireless speaker with ULT POWER SOUND, approximately 24 hours of battery life, IP66/IP67 protection, hands-free calling and a detachable shoulder strap.",
 
     specs: {
-      battery: "Up to 7 hours",
+      battery:
+        "Approx. 24 hours",
 
-      playtimeBoost:
-        "Up to 2 additional hours",
+      bluetooth:
+        "5.2",
 
-      bluetooth: "5.3",
+      protection:
+        "IP66 / IP67",
 
-      protection: "IP67",
+      frequency:
+        "20 Hz – 20 kHz",
 
-      frequency: "90 Hz – 20 kHz",
-
-      weight: "Approx. 190 g",
+      weight:
+        "Approx. 1.2 kg",
 
       dimensions:
-        "94.3 × 75.7 × 42.2 mm",
+        "256 × 113 × 79 mm",
 
-      power: "4.2 W RMS",
+      codec:
+        "SBC, AAC",
 
-      charging: "USB Type-C",
+      charging:
+        "USB Type-C",
 
-      connection: "Auracast",
+      speaker:
+        "1 Woofer + 1 Tweeter",
 
-      app: "JBL Portable",
+      app:
+        "Sony | Sound Connect",
+    },
+  },
+
+  {
+    id: 3,
+
+    name:
+      "Tribit XSound Go",
+
+    model:
+      "XSound Go",
+
+    brand:
+      "Tribit",
+
+    price:
+      3900,
+
+    mrp:
+      3900,
+
+    image:
+      "https://in.tribit.com/cdn/shop/files/XSoundGo-Black.jpg",
+
+    description:
+      "Portable stereo Bluetooth speaker with dual 8W drivers, passive radiator, up to 24 hours of playback, Bluetooth 5.3 and IPX7 waterproof protection.",
+
+    specs: {
+      battery:
+        "Up to 24 hours",
+
+      bluetooth:
+        "5.3",
+
+      protection:
+        "IPX7",
+
+      frequency:
+        "Not specified",
+
+      weight:
+        "Approx. 390 g",
+
+      dimensions:
+        "Not specified",
+
+      codec:
+        "SBC",
+
+      charging:
+        "USB-C",
+
+      speaker:
+        "2 × 40 mm drivers",
+
+      app:
+        "Tribit App",
+    },
+  },
+
+  {
+    id: 4,
+
+    name:
+      "Marshall Emberton III",
+
+    model:
+      "Emberton III",
+
+    brand:
+      "Marshall",
+
+    price:
+      17999,
+
+    mrp:
+      17999,
+
+    image:
+      "https://www.marshall.com/dw/image/v2/AAZP_PRD/on/demandware.static/-/Sites-zounds-master-catalog/default/dw5e8a3c5e/images/large/1006008_01.png",
+
+    description:
+      "Portable stereo Bluetooth speaker with Marshall signature sound, True Stereophonic 360° audio, 32+ hours of playtime and IP67 dust and waterproof protection.",
+
+    specs: {
+      battery:
+        "32+ hours",
+
+      bluetooth:
+        "5.3 LE",
+
+      protection:
+        "IP67",
+
+      frequency:
+        "65 Hz – 20 kHz",
+
+      weight:
+        "Approx. 670 g",
+
+      dimensions:
+        "160 × 68 × 76.9 mm",
+
+      codec:
+        "Not specified",
+
+      charging:
+        "USB-C",
+
+      speaker:
+        "2 × 2-inch 10W full-range",
+
+      app:
+        "Marshall Bluetooth",
     },
   },
 ];
-
 // =====================================================
 // APP
 // =====================================================
