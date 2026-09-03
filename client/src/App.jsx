@@ -40,229 +40,113 @@ const OTP_COOLDOWN_STORAGE_PREFIX =
 const products = [
   {
     id: 1,
-
-    name:
-      "boAt Stone 350 Pro Plus",
-
-    model:
-      "HA0202",
-
-    brand:
-      "boAt",
-
-    price:
-      1699,
-
-    mrp:
-      4990,
+    name: "boAt Stone 350 Pro Plus",
+    model: "Stone 350 Pro Plus",
+    brand: "boAt",
+    price: 1699,
+    mrp: 4990,
 
     image:
-      "https://www.boat-lifestyle.com/cdn/shop/files/Stone_350_Pro_Plus_1.png",
+      "https://fullspecs.net/images/products/8852_0_boat-stone-350-pro-9352fc9a341618579df1a368db356b6a.jpg",
 
     description:
-      "16W Bluetooth speaker with boAt Signature Sound, RGB LED lights, TWS pairing, hands-free calling, voice assistant support and up to 8 hours of playtime.",
+      "16W Bluetooth speaker with TWS, RGB LED lights, hands-free calling, voice assistant support and up to 8 hours of playtime.",
 
     specs: {
-      battery:
-        "Up to 8 hours",
-
-      bluetooth:
-        "5.3",
-
-      protection:
-        "IPX5",
-
-      frequency:
-        "Not specified",
-
-      weight:
-        "Not specified",
-
-      dimensions:
-        "240 × 92 × 92 mm",
-
-      codec:
-        "Not specified",
-
-      charging:
-        "USB Type-C",
-
-      speaker:
-        "2 × 2-inch drivers",
-
-      app:
-        "Not specified",
+      battery: "Up to 8 hours",
+      bluetooth: "5.3",
+      protection: "IPX5",
+      frequency: "Not specified",
+      weight: "Not specified",
+      dimensions: "240 × 92 × 92 mm",
+      codec: "Not specified",
+      charging: "USB Type-C",
+      speaker: "2 × 2-inch drivers",
+      app: "Not specified",
     },
   },
 
   {
     id: 2,
-
-    name:
-      "Sony ULT FIELD 3",
-
-    model:
-      "SRS-ULT30",
-
-    brand:
-      "Sony",
-
-    price:
-      17990,
-
-    mrp:
-      24990,
+    name: "Sony ULT FIELD 3",
+    model: "SRS-ULT30",
+    brand: "Sony",
+    price: 17990,
+    mrp: 24990,
 
     image:
-      "https://sony.scene7.com/is/image/sonyglobalsolutions/ULT-FIELD-3-Forest-Grey?$large360ViewerImage$=",
+      "https://cdn.ultra.md/images/webp/products/ffed899e-59e6-4b78-8a1b-b921c60e1678/images/2560321.webp",
 
     description:
-      "Portable wireless speaker with ULT POWER SOUND, approximately 24 hours of battery life, IP66/IP67 protection, hands-free calling and a detachable shoulder strap.",
+      "Portable wireless speaker with ULT POWER SOUND, approximately 24 hours of battery life, IP67 protection, hands-free calling and a detachable shoulder strap.",
 
     specs: {
-      battery:
-        "Approx. 24 hours",
-
-      bluetooth:
-        "5.2",
-
-      protection:
-        "IP66 / IP67",
-
-      frequency:
-        "20 Hz – 20 kHz",
-
-      weight:
-        "Approx. 1.2 kg",
-
-      dimensions:
-        "256 × 113 × 79 mm",
-
-      codec:
-        "SBC, AAC",
-
-      charging:
-        "USB Type-C",
-
-      speaker:
-        "1 Woofer + 1 Tweeter",
-
-      app:
-        "Sony | Sound Connect",
+      battery: "Approx. 24 hours",
+      bluetooth: "5.2",
+      protection: "IP66 / IP67",
+      frequency: "20 Hz – 20 kHz",
+      weight: "Approx. 1.2 kg",
+      dimensions: "256 × 113 × 79 mm",
+      codec: "SBC, AAC",
+      charging: "USB Type-C",
+      speaker: "2-way speaker system",
+      app: "Sony | Sound Connect",
     },
   },
 
   {
     id: 3,
-
-    name:
-      "Tribit XSound Go",
-
-    model:
-      "XSound Go",
-
-    brand:
-      "Tribit",
-
-    price:
-      3900,
-
-    mrp:
-      3900,
+    name: "Tribit XSound Go",
+    model: "XSound Go",
+    brand: "Tribit",
+    price: 3900,
+    mrp: 3900,
 
     image:
-      "https://in.tribit.com/cdn/shop/files/XSoundGo-Black.jpg",
+      "https://i.bolder.run/r/czozNTk5LGc6MTAwMHg/34576122/940722-TRIBIT0001.jpg",
 
     description:
-      "Portable stereo Bluetooth speaker with dual 8W drivers, passive radiator, up to 24 hours of playback, Bluetooth 5.3 and IPX7 waterproof protection.",
+      "Portable Bluetooth speaker with dual 8W drivers, Bluetooth 5.3, IPX7 waterproof protection and up to 24 hours of playback.",
 
     specs: {
-      battery:
-        "Up to 24 hours",
-
-      bluetooth:
-        "5.3",
-
-      protection:
-        "IPX7",
-
-      frequency:
-        "Not specified",
-
-      weight:
-        "Approx. 390 g",
-
-      dimensions:
-        "Not specified",
-
-      codec:
-        "SBC",
-
-      charging:
-        "USB-C",
-
-      speaker:
-        "2 × 40 mm drivers",
-
-      app:
-        "Tribit App",
+      battery: "Up to 24 hours",
+      bluetooth: "5.3",
+      protection: "IPX7",
+      frequency: "Not specified",
+      weight: "Approx. 390 g",
+      dimensions: "Not specified",
+      codec: "SBC",
+      charging: "USB-C",
+      speaker: "2 × 8W drivers",
+      app: "Tribit App",
     },
   },
 
   {
     id: 4,
-
-    name:
-      "Marshall Emberton III",
-
-    model:
-      "Emberton III",
-
-    brand:
-      "Marshall",
-
-    price:
-      17999,
-
-    mrp:
-      17999,
+    name: "Marshall Emberton III",
+    model: "Emberton III",
+    brand: "Marshall",
+    price: 17999,
+    mrp: 17999,
 
     image:
-      "https://www.marshall.com/dw/image/v2/AAZP_PRD/on/demandware.static/-/Sites-zounds-master-catalog/default/dw5e8a3c5e/images/large/1006008_01.png",
+      "https://media.currys.biz/i/currysprod/10267026?%24l-large%24=&fmt=auto",
 
     description:
-      "Portable stereo Bluetooth speaker with Marshall signature sound, True Stereophonic 360° audio, 32+ hours of playtime and IP67 dust and waterproof protection.",
+      "Portable Marshall speaker with True Stereophonic 360° sound, 32+ hours of playtime and IP67 dust and waterproof protection.",
 
     specs: {
-      battery:
-        "32+ hours",
-
-      bluetooth:
-        "5.3 LE",
-
-      protection:
-        "IP67",
-
-      frequency:
-        "65 Hz – 20 kHz",
-
-      weight:
-        "Approx. 670 g",
-
-      dimensions:
-        "160 × 68 × 76.9 mm",
-
-      codec:
-        "Not specified",
-
-      charging:
-        "USB-C",
-
-      speaker:
-        "2 × 2-inch 10W full-range",
-
-      app:
-        "Marshall Bluetooth",
+      battery: "32+ hours",
+      bluetooth: "5.3 LE",
+      protection: "IP67",
+      frequency: "65 Hz – 20 kHz",
+      weight: "0.67 kg",
+      dimensions: "160 × 68 × 76.9 mm",
+      codec: "Not specified",
+      charging: "USB-C",
+      speaker: "2 × 10W full-range",
+      app: "Marshall Bluetooth",
     },
   },
 ];
