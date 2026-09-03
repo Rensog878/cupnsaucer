@@ -1226,7 +1226,7 @@ function App() {
             order.currency,
 
           name:
-            "Cup & Saucer",
+            "My MERN Store",
 
           description:
             "Bluetooth Speaker Purchase",
@@ -1690,7 +1690,7 @@ function App() {
           <div>
 
             <h1>
-              My MERN Store
+              Cup & Saucer
             </h1>
 
             <p>
