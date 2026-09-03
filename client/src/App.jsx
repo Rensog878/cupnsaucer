@@ -1,4 +1,9 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+
 import "./App.css";
 
 // =====================================================
@@ -157,7 +162,9 @@ function App() {
   // =====================================================
 
   const [phone, setPhone] =
-    useState(RAZORPAY_TEST_PHONE);
+    useState(
+      RAZORPAY_TEST_PHONE
+    );
 
   const [otp, setOtp] =
     useState("");
@@ -177,16 +184,6 @@ function App() {
   // =====================================================
   // OTP RESEND TIMER
   // =====================================================
-
-  /*
-    IMPORTANT:
-    We restore the timer from localStorage here,
-    instead of calling setResendTimer() directly from
-    a useEffect.
-
-    This avoids the React hooks lint error:
-    react-hooks/set-state-in-effect
-  */
 
   const [resendTimer, setResendTimer] =
     useState(() => {
@@ -240,12 +237,8 @@ function App() {
       setInterval(() => {
         setResendTimer(
           (current) => {
-            if (
-              current <= 1
-            ) {
-              clearInterval(
-                timer
-              );
+            if (current <= 1) {
+              clearInterval(timer);
 
               try {
                 const cleanPhone =
@@ -256,16 +249,14 @@ function App() {
                     ""
                   );
 
-                if (
-                  cleanPhone
-                ) {
+                if (cleanPhone) {
                   localStorage.removeItem(
                     OTP_COOLDOWN_STORAGE_PREFIX +
                       cleanPhone
                   );
                 }
               } catch {
-                // Ignore localStorage errors.
+                // Ignore storage errors.
               }
 
               return 0;
@@ -290,6 +281,23 @@ function App() {
 
   const [cart, setCart] =
     useState([]);
+
+  // =====================================================
+  // ADD TO CART POPUP STATE
+  // =====================================================
+
+  const [cartToast, setCartToast] =
+    useState({
+      visible: false,
+      productName: "",
+    });
+
+  const cartToastTimerRef =
+    useRef(null);
+
+  // =====================================================
+  // PAYMENT STATE
+  // =====================================================
 
   const [paymentLoading, setPaymentLoading] =
     useState(false);
@@ -415,9 +423,7 @@ function App() {
                 value
               );
 
-            if (
-              cleanPhone
-            ) {
+            if (cleanPhone) {
               try {
                 localStorage.removeItem(
                   OTP_COOLDOWN_STORAGE_PREFIX +
@@ -454,16 +460,17 @@ function App() {
         setLoginMessage(
           "Please enter your WhatsApp number"
         );
+
         return;
       }
 
-      // Frontend cooldown.
       if (
         resendTimer > 0
       ) {
         setLoginMessage(
           `Please wait ${resendTimer} seconds before requesting another OTP.`
         );
+
         return;
       }
 
@@ -632,6 +639,7 @@ function App() {
         setLoginMessage(
           "Please enter the OTP"
         );
+
         return;
       }
 
@@ -643,6 +651,7 @@ function App() {
         setLoginMessage(
           "Please enter a valid 6-digit OTP"
         );
+
         return;
       }
 
@@ -655,10 +664,6 @@ function App() {
       );
 
       try {
-        console.log(
-          "Verifying OTP..."
-        );
-
         const response =
           await fetch(
             `${API_URL}/api/verify-otp`,
@@ -742,11 +747,55 @@ function App() {
         ""
       );
 
-      // Backend remains the authority.
       await syncCooldownFromServer(
         phone
       );
     };
+
+  // =====================================================
+  // CLOSE CART POPUP
+  // =====================================================
+
+  const closeCartToast = () => {
+    setCartToast({
+      visible: false,
+      productName: "",
+    });
+
+    if (
+      cartToastTimerRef.current
+    ) {
+      clearTimeout(
+        cartToastTimerRef.current
+      );
+
+      cartToastTimerRef.current =
+        null;
+    }
+  };
+
+  // =====================================================
+  // GO TO CART
+  // =====================================================
+
+  const goToCart = () => {
+    const cartSection =
+      document.querySelector(
+        ".cart"
+      );
+
+    if (cartSection) {
+      cartSection.scrollIntoView({
+        behavior:
+          "smooth",
+
+        block:
+          "start",
+      });
+    }
+
+    closeCartToast();
+  };
 
   // =====================================================
   // LOGOUT
@@ -756,6 +805,8 @@ function App() {
     async () => {
       const currentPhone =
         phone;
+
+      closeCartToast();
 
       setLoggedIn(
         false
@@ -785,8 +836,6 @@ function App() {
         ""
       );
 
-      // Keep current phone so the user can immediately
-      // attempt login again with the same account.
       setPhone(
         currentPhone
       );
@@ -809,7 +858,7 @@ function App() {
         );
       }
 
-      // Logout does not cancel backend cooldown.
+      // Backend cooldown is not cancelled by logout.
       await syncCooldownFromServer(
         currentPhone
       );
@@ -830,9 +879,7 @@ function App() {
                 product.id
             );
 
-          if (
-            existing
-          ) {
+          if (existing) {
             return currentCart.map(
               (item) =>
                 item.id ===
@@ -858,6 +905,37 @@ function App() {
           ];
         }
       );
+
+      // =================================================
+      // SHOW POPUP
+      // =================================================
+
+      setCartToast({
+        visible: true,
+        productName:
+          product.name,
+      });
+
+      // Clear previous popup timer.
+      if (
+        cartToastTimerRef.current
+      ) {
+        clearTimeout(
+          cartToastTimerRef.current
+        );
+      }
+
+      // Auto-hide after 2.5 seconds.
+      cartToastTimerRef.current =
+        setTimeout(() => {
+          setCartToast({
+            visible: false,
+            productName: "",
+          });
+
+          cartToastTimerRef.current =
+            null;
+        }, 2500);
     };
 
   // =====================================================
@@ -926,6 +1004,22 @@ function App() {
             )
       );
     };
+
+  // =====================================================
+  // CLEANUP POPUP TIMER
+  // =====================================================
+
+  useEffect(() => {
+    return () => {
+      if (
+        cartToastTimerRef.current
+      ) {
+        clearTimeout(
+          cartToastTimerRef.current
+        );
+      }
+    };
+  }, []);
 
   // =====================================================
   // CART TOTAL
@@ -1554,6 +1648,43 @@ function App() {
     <div className="app">
 
       {/* =================================================
+          ADD TO CART POPUP
+      ================================================= */}
+
+      {cartToast.visible && (
+        <div
+          className="cart-toast"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="cart-toast-icon">
+            ✓
+          </div>
+
+          <div className="cart-toast-content">
+
+            <strong>
+              Added to Cart
+            </strong>
+
+            <span>
+              {cartToast.productName}
+            </span>
+
+            <button
+              type="button"
+              onClick={
+                goToCart
+              }
+            >
+              Go to Cart →
+            </button>
+
+          </div>
+        </div>
+      )}
+
+      {/* =================================================
           HEADER
       ================================================= */}
 
@@ -1686,28 +1817,38 @@ function App() {
                       style={{
                         display:
                           "flex",
+
                         alignItems:
                           "center",
+
                         justifyContent:
                           "space-between",
+
                         gap:
                           "10px",
+
                         marginTop:
                           "12px",
+
                         marginBottom:
                           "5px",
                       }}
                     >
+
                       <span
                         style={{
                           color:
                             "#7c3aed",
+
                           fontSize:
                             "12px",
+
                           fontWeight:
                             "900",
+
                           letterSpacing:
                             "0.8px",
+
                           textTransform:
                             "uppercase",
                         }}
@@ -1721,8 +1862,10 @@ function App() {
                         style={{
                           color:
                             "#81758e",
+
                           fontSize:
                             "11px",
+
                           fontWeight:
                             "700",
                         }}
@@ -1732,6 +1875,7 @@ function App() {
                           product.model
                         }
                       </span>
+
                     </div>
 
                     <h3>
@@ -1742,10 +1886,13 @@ function App() {
                       style={{
                         margin:
                           "8px 0 0",
+
                         color:
                           "#756b80",
+
                         fontSize:
                           "13px",
+
                         lineHeight:
                           "1.55",
                       }}
@@ -1763,10 +1910,13 @@ function App() {
                       style={{
                         display:
                           "grid",
+
                         gridTemplateColumns:
                           "repeat(3, minmax(0, 1fr))",
+
                         gap:
                           "8px",
+
                         marginTop:
                           "15px",
                       }}
@@ -1776,16 +1926,22 @@ function App() {
                         style={{
                           padding:
                             "9px 8px",
+
                           borderRadius:
                             "11px",
+
                           background:
                             "#f5efff",
+
                           color:
                             "#67417e",
+
                           fontSize:
                             "11px",
+
                           fontWeight:
                             "800",
+
                           textAlign:
                             "center",
                         }}
@@ -1803,16 +1959,22 @@ function App() {
                         style={{
                           padding:
                             "9px 8px",
+
                           borderRadius:
                             "11px",
+
                           background:
                             "#eef9ff",
+
                           color:
                             "#25607b",
+
                           fontSize:
                             "11px",
+
                           fontWeight:
                             "800",
+
                           textAlign:
                             "center",
                         }}
@@ -1830,16 +1992,22 @@ function App() {
                         style={{
                           padding:
                             "9px 8px",
+
                           borderRadius:
                             "11px",
+
                           background:
                             "#fff2f8",
+
                           color:
                             "#92405f",
+
                           fontSize:
                             "11px",
+
                           fontWeight:
                             "800",
+
                           textAlign:
                             "center",
                         }}
@@ -1864,12 +2032,16 @@ function App() {
                       style={{
                         marginTop:
                           "14px",
+
                         padding:
                           "12px",
+
                         borderRadius:
                           "13px",
+
                         background:
                           "#faf8fd",
+
                         border:
                           "1px solid #eee7f5",
                       }}
@@ -1879,20 +2051,26 @@ function App() {
                         style={{
                           display:
                             "flex",
+
                           justifyContent:
                             "space-between",
+
                           gap:
                             "10px",
+
                           padding:
                             "5px 0",
+
                           borderBottom:
                             "1px solid #eee8f3",
                         }}
                       >
+
                         <span
                           style={{
                             color:
                               "#8a7f94",
+
                             fontSize:
                               "11px",
                           }}
@@ -1904,6 +2082,7 @@ function App() {
                           style={{
                             color:
                               "#493950",
+
                             fontSize:
                               "11px",
                           }}
@@ -1914,26 +2093,33 @@ function App() {
                               .frequency
                           }
                         </strong>
+
                       </div>
 
                       <div
                         style={{
                           display:
                             "flex",
+
                           justifyContent:
                             "space-between",
+
                           gap:
                             "10px",
+
                           padding:
                             "5px 0",
+
                           borderBottom:
                             "1px solid #eee8f3",
                         }}
                       >
+
                         <span
                           style={{
                             color:
                               "#8a7f94",
+
                             fontSize:
                               "11px",
                           }}
@@ -1945,6 +2131,7 @@ function App() {
                           style={{
                             color:
                               "#493950",
+
                             fontSize:
                               "11px",
                           }}
@@ -1955,24 +2142,30 @@ function App() {
                               .weight
                           }
                         </strong>
+
                       </div>
 
                       <div
                         style={{
                           display:
                             "flex",
+
                           justifyContent:
                             "space-between",
+
                           gap:
                             "10px",
+
                           padding:
                             "5px 0",
                         }}
                       >
+
                         <span
                           style={{
                             color:
                               "#8a7f94",
+
                             fontSize:
                               "11px",
                           }}
@@ -1984,6 +2177,7 @@ function App() {
                           style={{
                             color:
                               "#493950",
+
                             fontSize:
                               "11px",
                           }}
@@ -1994,12 +2188,13 @@ function App() {
                               .charging
                           }
                         </strong>
+
                       </div>
 
                     </div>
 
                     {/* =================================================
-                        PRICE
+                        PRICE AND ADD TO CART
                     ================================================= */}
 
                     <div className="product-bottom">
@@ -2017,8 +2212,10 @@ function App() {
                           style={{
                             margin:
                               "3px 0 0",
+
                             color:
                               "#95899f",
+
                             fontSize:
                               "11px",
                           }}
@@ -2032,6 +2229,7 @@ function App() {
                       </div>
 
                       <button
+                        type="button"
                         onClick={() =>
                           addToCart(
                             product
@@ -2054,7 +2252,7 @@ function App() {
         </section>
 
         {/* =================================================
-            CART
+            SHOPPING CART
         ================================================= */}
 
         <section className="cart">
@@ -2090,6 +2288,10 @@ function App() {
 
           </div>
 
+          {/* =================================================
+              EMPTY CART
+          ================================================= */}
+
           {cart.length ===
           0 ? (
             <div className="empty-cart">
@@ -2111,6 +2313,10 @@ function App() {
           ) : (
             <>
 
+              {/* =================================================
+                  CART ITEMS
+              ================================================= */}
+
               <div className="cart-list">
 
                 {cart.map(
@@ -2122,9 +2328,7 @@ function App() {
                       }
                     >
 
-                      {/* =================================================
-                          CART PRODUCT
-                      ================================================= */}
+                      {/* PRODUCT */}
 
                       <div className="cart-product">
 
@@ -2163,13 +2367,13 @@ function App() {
 
                       </div>
 
-                      {/* =================================================
-                          QUANTITY
-                      ================================================= */}
+                      {/* QUANTITY */}
 
                       <div className="quantity">
 
                         <button
+                          type="button"
+                          aria-label={`Decrease quantity of ${item.name}`}
                           onClick={() =>
                             decreaseQuantity(
                               item.id
@@ -2186,6 +2390,8 @@ function App() {
                         </span>
 
                         <button
+                          type="button"
+                          aria-label={`Increase quantity of ${item.name}`}
                           onClick={() =>
                             increaseQuantity(
                               item.id
@@ -2197,9 +2403,7 @@ function App() {
 
                       </div>
 
-                      {/* =================================================
-                          ITEM TOTAL
-                      ================================================= */}
+                      {/* ITEM TOTAL */}
 
                       <div className="item-total">
                         ₹
@@ -2211,11 +2415,10 @@ function App() {
                         )}
                       </div>
 
-                      {/* =================================================
-                          REMOVE
-                      ================================================= */}
+                      {/* REMOVE */}
 
                       <button
+                        type="button"
                         className="remove"
                         onClick={() =>
                           removeFromCart(
@@ -2254,6 +2457,7 @@ function App() {
                 </div>
 
                 <button
+                  type="button"
                   className="pay-button"
                   onClick={
                     handlePayment
@@ -2278,6 +2482,10 @@ function App() {
 
             </>
           )}
+
+          {/* =================================================
+              PAYMENT STATUS
+          ================================================= */}
 
           {paymentStatus && (
             <div className="status">
