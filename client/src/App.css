@@ -699,7 +699,13 @@ main {
 
   border-radius: 18px;
 
-  background: transparent;
+  background: linear-gradient(
+    135deg,
+    #f6f2fa,
+    #f0f5ff
+  );
+
+  mix-blend-mode: multiply;
 }
 
 .product-badge {
@@ -2291,4 +2297,12 @@ main {
   object-fit: contain;
   object-position: center;
   padding: 18px;
+
+  background: linear-gradient(
+    135deg,
+    #f6f2fa,
+    #f0f5ff
+  );
+
+  mix-blend-mode: multiply;
 }
