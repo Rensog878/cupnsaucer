@@ -1226,7 +1226,7 @@ function App() {
             order.currency,
 
           name:
-            "My MERN Store",
+            "Cup & Saucer",
 
           description:
             "Bluetooth Speaker Purchase",
