@@ -31,17 +31,119 @@ const OTP_COOLDOWN_STORAGE_PREFIX =
 const products = [
   {
     id: 1,
-    name: "Product One",
-    price: 1,
+
+    name:
+      "Sony ULT FIELD 1",
+
+    model:
+      "SRS-ULT10",
+
+    brand:
+      "Sony",
+
+    price:
+      9990,
+
+    mrp:
+      16990,
+
     image:
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=600&q=80",
+      "https://sony.scene7.com/is/image/sonyglobalsolutions/01-23?$large360ViewerImage$=",
+
+    description:
+      "Portable Bluetooth speaker with ULT POWER SOUND, up to 12 hours of battery life, IP67 water and dust resistance, Bluetooth 5.3 and hands-free calling.",
+
+    specs: {
+      battery:
+        "Up to 12 hours",
+
+      bluetooth:
+        "5.3",
+
+      protection:
+        "IP67",
+
+      frequency:
+        "20 Hz – 20 kHz",
+
+      weight:
+        "Approx. 650 g",
+
+      dimensions:
+        "206 × 77 × 76 mm",
+
+      codec:
+        "SBC, AAC",
+
+      charging:
+        "USB Type-C",
+
+      speaker:
+        "1 Woofer + 1 Tweeter",
+
+      app:
+        "Sony | Music Center",
+    },
   },
+
   {
     id: 2,
-    name: "Product Two",
-    price: 2,
+
+    name:
+      "JBL Go 4",
+
+    model:
+      "GO 4",
+
+    brand:
+      "JBL",
+
+    price:
+      3499,
+
+    mrp:
+      5499,
+
     image:
-      "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=600&q=80",
+      "https://in.jbl.com/dw/image/v2/BFND_PRD/on/demandware.static/-/Sites-masterCatalog_Harman/default/dw96fc93ec/JBL_GO_4_HERO_BLACK_48156_x4.png?sh=535&sw=535",
+
+    description:
+      "Ultra-portable Bluetooth speaker with JBL Pro Sound, punchy bass, IP67 waterproof and dustproof protection, USB-C charging and up to 7 hours of playtime.",
+
+    specs: {
+      battery:
+        "Up to 7 hours",
+
+      playtimeBoost:
+        "Up to 2 additional hours",
+
+      bluetooth:
+        "5.3",
+
+      protection:
+        "IP67",
+
+      frequency:
+        "90 Hz – 20 kHz",
+
+      weight:
+        "Approx. 190 g",
+
+      dimensions:
+        "94.3 × 75.7 × 42.2 mm",
+
+      power:
+        "4.2 W RMS",
+
+      charging:
+        "USB Type-C",
+
+      connection:
+        "Auracast",
+
+      app:
+        "JBL Portable",
+    },
   },
 ];
 
@@ -260,7 +362,11 @@ function App() {
   const syncCooldownFromServer =
     async (value) => {
       try {
-        if (!String(value || "").trim()) {
+        if (
+          !String(
+            value || ""
+          ).trim()
+        ) {
           setResendTimer(0);
           return 0;
         }
@@ -273,6 +379,7 @@ function App() {
             {
               method:
                 "GET",
+
               credentials:
                 "include",
             }
@@ -635,7 +742,7 @@ function App() {
         ""
       );
 
-      // The backend remains the authority.
+      // Backend remains the authority.
       await syncCooldownFromServer(
         phone
       );
@@ -690,6 +797,7 @@ function App() {
           {
             method:
               "POST",
+
             credentials:
               "include",
           }
@@ -701,8 +809,7 @@ function App() {
         );
       }
 
-      // IMPORTANT:
-      // Logout does not cancel the backend cooldown.
+      // Logout does not cancel backend cooldown.
       await syncCooldownFromServer(
         currentPhone
       );
@@ -732,6 +839,7 @@ function App() {
                 product.id
                   ? {
                       ...item,
+
                       quantity:
                         item.quantity +
                         1,
@@ -742,6 +850,7 @@ function App() {
 
           return [
             ...currentCart,
+
             {
               ...product,
               quantity: 1,
@@ -779,6 +888,7 @@ function App() {
               item.id === id
                 ? {
                     ...item,
+
                     quantity:
                       item.quantity +
                       1,
@@ -802,6 +912,7 @@ function App() {
                 item.id === id
                   ? {
                       ...item,
+
                       quantity:
                         item.quantity -
                         1,
@@ -843,6 +954,7 @@ function App() {
             resolve(
               true
             );
+
             return;
           }
 
@@ -910,6 +1022,7 @@ function App() {
         alert(
           "Please login first"
         );
+
         return;
       }
 
@@ -920,6 +1033,7 @@ function App() {
         alert(
           "Please add a product"
         );
+
         return;
       }
 
@@ -1048,7 +1162,7 @@ function App() {
             "My MERN Store",
 
           description:
-            "Product Purchase",
+            "Bluetooth Speaker Purchase",
 
           order_id:
             order.id,
@@ -1061,6 +1175,16 @@ function App() {
           notes: {
             phone:
               phone,
+
+            products:
+              cart
+                .map(
+                  (item) =>
+                    `${item.name} x${item.quantity}`
+                )
+                .join(
+                  ", "
+                ),
           },
 
           theme: {
@@ -1220,6 +1344,7 @@ function App() {
   if (!loggedIn) {
     return (
       <div className="login-page">
+
         <div className="login-card">
 
           <div className="login-logo">
@@ -1308,6 +1433,7 @@ function App() {
           ) : (
             <>
               <div className="otp-info">
+
                 <span>
                   OTP sent to
                 </span>
@@ -1315,6 +1441,7 @@ function App() {
                 <strong>
                   {phone}
                 </strong>
+
               </div>
 
               <div className="input-label">
@@ -1414,6 +1541,7 @@ function App() {
           </div>
 
         </div>
+
       </div>
     );
   }
@@ -1438,6 +1566,7 @@ function App() {
           </div>
 
           <div>
+
             <h1>
               My MERN Store
             </h1>
@@ -1446,6 +1575,7 @@ function App() {
               Logged in with{" "}
               {phone}
             </p>
+
           </div>
 
         </div>
@@ -1494,16 +1624,16 @@ function App() {
             <div>
 
               <span className="eyebrow">
-                OUR PRODUCTS
+                PREMIUM AUDIO
               </span>
 
               <h2>
-                Choose your product
+                Bluetooth Speakers
               </h2>
 
               <p>
-                Simple products,
-                simple checkout.
+                Shop genuine audio products with clear
+                pricing and product specifications.
               </p>
 
             </div>
@@ -1521,6 +1651,10 @@ function App() {
                   }
                 >
 
+                  {/* =================================================
+                      PRODUCT IMAGE
+                  ================================================= */}
+
                   <div className="product-image-wrapper">
 
                     <img
@@ -1530,28 +1664,372 @@ function App() {
                       alt={
                         product.name
                       }
+                      onError={(event) => {
+                        event.currentTarget.style.display =
+                          "none";
+                      }}
                     />
 
                     <span className="product-badge">
-                      NEW
+                      ORIGINAL
                     </span>
 
                   </div>
 
+                  {/* =================================================
+                      PRODUCT CONTENT
+                  ================================================= */}
+
                   <div className="product-content">
+
+                    <div
+                      style={{
+                        display:
+                          "flex",
+                        alignItems:
+                          "center",
+                        justifyContent:
+                          "space-between",
+                        gap:
+                          "10px",
+                        marginTop:
+                          "12px",
+                        marginBottom:
+                          "5px",
+                      }}
+                    >
+                      <span
+                        style={{
+                          color:
+                            "#7c3aed",
+                          fontSize:
+                            "12px",
+                          fontWeight:
+                            "900",
+                          letterSpacing:
+                            "0.8px",
+                          textTransform:
+                            "uppercase",
+                        }}
+                      >
+                        {
+                          product.brand
+                        }
+                      </span>
+
+                      <span
+                        style={{
+                          color:
+                            "#81758e",
+                          fontSize:
+                            "11px",
+                          fontWeight:
+                            "700",
+                        }}
+                      >
+                        Model{" "}
+                        {
+                          product.model
+                        }
+                      </span>
+                    </div>
 
                     <h3>
                       {product.name}
                     </h3>
 
+                    <p
+                      style={{
+                        margin:
+                          "8px 0 0",
+                        color:
+                          "#756b80",
+                        fontSize:
+                          "13px",
+                        lineHeight:
+                          "1.55",
+                      }}
+                    >
+                      {
+                        product.description
+                      }
+                    </p>
+
+                    {/* =================================================
+                        KEY SPECS
+                    ================================================= */}
+
+                    <div
+                      style={{
+                        display:
+                          "grid",
+                        gridTemplateColumns:
+                          "repeat(3, minmax(0, 1fr))",
+                        gap:
+                          "8px",
+                        marginTop:
+                          "15px",
+                      }}
+                    >
+
+                      <div
+                        style={{
+                          padding:
+                            "9px 8px",
+                          borderRadius:
+                            "11px",
+                          background:
+                            "#f5efff",
+                          color:
+                            "#67417e",
+                          fontSize:
+                            "11px",
+                          fontWeight:
+                            "800",
+                          textAlign:
+                            "center",
+                        }}
+                      >
+                        🔋
+                        <br />
+                        {
+                          product
+                            .specs
+                            .battery
+                        }
+                      </div>
+
+                      <div
+                        style={{
+                          padding:
+                            "9px 8px",
+                          borderRadius:
+                            "11px",
+                          background:
+                            "#eef9ff",
+                          color:
+                            "#25607b",
+                          fontSize:
+                            "11px",
+                          fontWeight:
+                            "800",
+                          textAlign:
+                            "center",
+                        }}
+                      >
+                        💧
+                        <br />
+                        {
+                          product
+                            .specs
+                            .protection
+                        }
+                      </div>
+
+                      <div
+                        style={{
+                          padding:
+                            "9px 8px",
+                          borderRadius:
+                            "11px",
+                          background:
+                            "#fff2f8",
+                          color:
+                            "#92405f",
+                          fontSize:
+                            "11px",
+                          fontWeight:
+                            "800",
+                          textAlign:
+                            "center",
+                        }}
+                      >
+                        📶
+                        <br />
+                        BT{" "}
+                        {
+                          product
+                            .specs
+                            .bluetooth
+                        }
+                      </div>
+
+                    </div>
+
+                    {/* =================================================
+                        MORE SPECIFICATIONS
+                    ================================================= */}
+
+                    <div
+                      style={{
+                        marginTop:
+                          "14px",
+                        padding:
+                          "12px",
+                        borderRadius:
+                          "13px",
+                        background:
+                          "#faf8fd",
+                        border:
+                          "1px solid #eee7f5",
+                      }}
+                    >
+
+                      <div
+                        style={{
+                          display:
+                            "flex",
+                          justifyContent:
+                            "space-between",
+                          gap:
+                            "10px",
+                          padding:
+                            "5px 0",
+                          borderBottom:
+                            "1px solid #eee8f3",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color:
+                              "#8a7f94",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          Frequency
+                        </span>
+
+                        <strong
+                          style={{
+                            color:
+                              "#493950",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          {
+                            product
+                              .specs
+                              .frequency
+                          }
+                        </strong>
+                      </div>
+
+                      <div
+                        style={{
+                          display:
+                            "flex",
+                          justifyContent:
+                            "space-between",
+                          gap:
+                            "10px",
+                          padding:
+                            "5px 0",
+                          borderBottom:
+                            "1px solid #eee8f3",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color:
+                              "#8a7f94",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          Weight
+                        </span>
+
+                        <strong
+                          style={{
+                            color:
+                              "#493950",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          {
+                            product
+                              .specs
+                              .weight
+                          }
+                        </strong>
+                      </div>
+
+                      <div
+                        style={{
+                          display:
+                            "flex",
+                          justifyContent:
+                            "space-between",
+                          gap:
+                            "10px",
+                          padding:
+                            "5px 0",
+                        }}
+                      >
+                        <span
+                          style={{
+                            color:
+                              "#8a7f94",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          Charging
+                        </span>
+
+                        <strong
+                          style={{
+                            color:
+                              "#493950",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          {
+                            product
+                              .specs
+                              .charging
+                          }
+                        </strong>
+                      </div>
+
+                    </div>
+
+                    {/* =================================================
+                        PRICE
+                    ================================================= */}
+
                     <div className="product-bottom">
 
-                      <p className="price">
-                        ₹
-                        {
-                          product.price
-                        }
-                      </p>
+                      <div>
+
+                        <p className="price">
+                          ₹
+                          {product.price.toLocaleString(
+                            "en-IN"
+                          )}
+                        </p>
+
+                        <p
+                          style={{
+                            margin:
+                              "3px 0 0",
+                            color:
+                              "#95899f",
+                            fontSize:
+                              "11px",
+                          }}
+                        >
+                          M.R.P. ₹
+                          {product.mrp.toLocaleString(
+                            "en-IN"
+                          )}
+                        </p>
+
+                      </div>
 
                       <button
                         onClick={() =>
@@ -1598,6 +2076,7 @@ function App() {
             {cart.length >
               0 && (
               <span className="cart-items-label">
+
                 {cart.reduce(
                   (sum, item) =>
                     sum +
@@ -1605,6 +2084,7 @@ function App() {
                   0
                 )}{" "}
                 items
+
               </span>
             )}
 
@@ -1642,6 +2122,10 @@ function App() {
                       }
                     >
 
+                      {/* =================================================
+                          CART PRODUCT
+                      ================================================= */}
+
                       <div className="cart-product">
 
                         <img
@@ -1656,20 +2140,32 @@ function App() {
                         <div>
 
                           <strong>
-                            {item.name}
+                            {
+                              item.name
+                            }
                           </strong>
 
                           <p>
+                            {item.brand}{" "}
+                            •{" "}
+                            {item.model}
+                          </p>
+
+                          <p>
                             ₹
-                            {
-                              item.price
-                            }{" "}
+                            {item.price.toLocaleString(
+                              "en-IN"
+                            )}{" "}
                             each
                           </p>
 
                         </div>
 
                       </div>
+
+                      {/* =================================================
+                          QUANTITY
+                      ================================================= */}
 
                       <div className="quantity">
 
@@ -1701,11 +2197,23 @@ function App() {
 
                       </div>
 
+                      {/* =================================================
+                          ITEM TOTAL
+                      ================================================= */}
+
                       <div className="item-total">
                         ₹
-                        {item.price *
-                          item.quantity}
+                        {(
+                          item.price *
+                          item.quantity
+                        ).toLocaleString(
+                          "en-IN"
+                        )}
                       </div>
+
+                      {/* =================================================
+                          REMOVE
+                      ================================================= */}
 
                       <button
                         className="remove"
@@ -1724,6 +2232,10 @@ function App() {
 
               </div>
 
+              {/* =================================================
+                  CHECKOUT
+              ================================================= */}
+
               <div className="checkout">
 
                 <div className="total">
@@ -1733,7 +2245,10 @@ function App() {
                   </span>
 
                   <strong>
-                    ₹{total}
+                    ₹
+                    {total.toLocaleString(
+                      "en-IN"
+                    )}
                   </strong>
 
                 </div>
@@ -1749,7 +2264,9 @@ function App() {
                 >
                   {paymentLoading
                     ? "Processing..."
-                    : `Pay ₹${total} with Razorpay`}
+                    : `Pay ₹${total.toLocaleString(
+                        "en-IN"
+                      )} with Razorpay`}
                 </button>
 
                 <p className="secure-payment">
