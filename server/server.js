@@ -56,7 +56,7 @@ const allowedOrigins = [
   "https://kqphfa.store",
   "https://www.kqphfa.store",
 
-  "https://kqphfa.vercel.app",
+"https://cupnsaucer-k2le.vercel.app",
   FRONTEND_URL,
   "http://localhost:5173",
   "http://localhost:5174",
